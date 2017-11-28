@@ -1,23 +1,68 @@
+# ChatBot Monitor Bot
 
-     ,-----.,--.                  ,--. ,---.   ,--.,------.  ,------.
-    '  .--./|  | ,---. ,--.,--. ,-|  || o   \  |  ||  .-.  \ |  .---'
-    |  |    |  || .-. ||  ||  |' .-. |`..'  |  |  ||  |  \  :|  `--, 
-    '  '--'\|  |' '-' ''  ''  '\ `-' | .'  /   |  ||  '--'  /|  `---.
-     `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
-    ----------------------------------------------------------------- 
+ChatBot Monitor Bot Bot is a chatbot netowrk monitoring bot designed for Cisco Spark. 
+This bot is meant for admins to track and troubleshoot their chat bot deployments, not an end user chat bot.
+This bot is solely driven by commands.
 
+## Getting Started
 
-Welcome to your Node.js project on Cloud9 IDE!
+ChatBot Monitor Bot is meant to be a base to which to build. Although it does not use a database for storing 
+space data adding one should be as simple of replacing the crud file with your own database methods.
 
-This chat example showcases how to use `socket.io` with a static `express` server.
+ChatBot Monitor Bot uses a json file to store a limited set of space data which is loaded on startup and rewriten on new space adds and removals.
+Its simple but limited. <example.json> is a blank JSON file meant as a placeholder for space.json to be built.
 
-## Running the server
+### Prerequisites
 
-1) Open `server.js` and start the app by clicking on the "Run" button in the top menu.
+Nodejs, node-flint.
 
-2) Alternatively you can launch the app from the Terminal:
+Monitored bots require the ability to respond to http requests.Express example below:
 
-    $ node server.js
+```javascript
+app.get('/monitor', function (req, res) {
+  var roomCount = flint.bots.length;
+  var json_response = {
+    'name':'Bot being monitored',
+    'roomCount': roomCount
+  };
+  res.status(200).json(json_response);
+  res.end();
+});
+```
 
-Once the server is running, open the project in the shape of 'https://projectname-username.c9.io/'. As you enter your name, watch the Users list (on the left) update. Once you press Enter or Send, the message is shared with all connected clients.
-# netTools
+### Installing
+
+#### Via Git
+```bash
+mkdir myproj
+cd myproj
+git clone https://github.com/voipnorm/nodeMonV2.git
+npm install
+```
+
+Set the following environment variables...
+
+```
+SPARK_ROOM_ID=<admin room ID for feedback>
+SPARK_BOT=<bot access token>
+WEBPORT=8080
+NODE_ENV=development
+SPARK_BOT_STRING= <bot texted string>
+ALLOW_DOMAIN= <authorised dmain>
+APP_ADMIN= <admin email> 
+```
+## Built With
+
+* [node-flint](https://github.com/flint-bot/flint) - The bot framework used
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Nick Marus node-flint creator.
+
+## Flint Support
+
+Chat with us here:[flint-support](https://eurl.io/#rkwLEq4fZ)
