@@ -265,28 +265,29 @@ module.exports = {
         });
         return;
     },
-    monitor: function(request, bot, trigger, spData){
+    stopMonitor: function(request, bot, trigger, spData){
+        
+         return;
+    },
+    updateUrls: function(request,bot,trigger,spData){
         var text = request.split(' ');
-        var type = text[1];
-        if(type === "halt"){
-            spData.stopPing();
-            
-            bot.say("Monitor has been stopped.");
-            
-          }else{
-            var website = type;
-            spData.checkWebsite(website , function(status){
+        var website = text[1];
+        spData.checkWebsite(website , function(status){
                 if(status === 'uriOkay'){
-                    spData.startPing();
-                    bot.say("Monitoring website "+website+ " for the next 24 hours");
+                    spData.updateURLArray(website);
+                    bot.say("Websites monitored update : "+website);
                 }else{
                     bot.say("This URL you entered had some issues. Please try again.");
                 }
             });
-       
-         }
-         return;
+        return;
     },
+    deleteUrls: function(website,bot,trigger,spData){
+        spData.removeURLArray(website, function(data){
+            return bot.say("Website removed: "+website);
+        });
+    },
+    
     url: function(request, bot,trigger){
         var text = request.split(' ');
         var url = text[1];

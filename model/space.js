@@ -89,7 +89,12 @@ Space.prototype.loadURLArray =  function(cb){
     cb("Urls load sequence is complete.");
     return pingarray;
 };
-
+Space.prototype.stopMonitor = function(cb){
+    var self = this;
+    var pingarray = self.monitored;
+    pingarray = [];
+    cb("Website monitor halted");
+};
 Space.prototype.updateURLArray = function(newUrl, cb){
     var self = this;
     var urlArray = self.webUrls;
@@ -107,6 +112,7 @@ Space.prototype.removeURLArray = function(oldUrl, cb){
     var urlIndex = _.findIndex(urlArray, {url: oldUrl});
     urlArray.splice(urlIndex, 1);
     self.writeToFile();
+    cb();
 };
 
 Space.prototype.dailyReport = function(cb){
