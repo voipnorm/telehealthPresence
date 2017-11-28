@@ -259,8 +259,11 @@ module.exports = {
         return  txt+srv;
     },
     loadUrls: function(request, bot, trigger, spData){
-        spData.loadURLArray();
-        return bot.say("Urls loading in progress.....")
+        bot.say("Urls loading in progress.....");
+        spData.loadURLArray(function(data){
+            bot.say(data);
+        });
+        return;
     },
     monitor: function(request, bot, trigger, spData){
         var text = request.split(' ');
@@ -293,6 +296,21 @@ module.exports = {
     },
     report: function(request, bot, trigger, spData){
         return spData.immediateReport();
+    },
+    schedule: function(request, bot, trigger, spData){
+        var text = request.replace("/schedule ",'');
+        if(text === "true"){
+            spData.dailyReport(function(){
+                return bot.say("Daily report request has been processed and is enabled.");
+            });
+        }else if(text==="false"){
+           spData.cancelSchedule(function(){
+               return bot.say("Daily report request has been processed and is disabled.");
+           }) 
+        }else{
+            return bot.say("Your request could not be processed please use only true or false after the **/schedule** command.");
+        }
+        
     },
 //default switch command
     finalChoice: function(request, bot, trigger){

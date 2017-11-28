@@ -76,7 +76,7 @@ Space.prototype.ping = function(urlString){
     var self = this;
     var req;
     var options = url.parse(urlString);
-    options.method = this.method;
+    options.method = self.method;
 
     if(urlString.indexOf('https:') === 0) {
         req = https.request(options, function (res) {
@@ -119,7 +119,7 @@ Space.prototype.ping = function(urlString){
         
     });
     req.end();
-    return this;
+    return self;
 };
     
 //generates either up time or down reports
@@ -138,14 +138,14 @@ Space.prototype.pingReport = function(status, code, urlString){
         return myutils.sparkPost(websiteUp, self.spaceId)
             
         }else{
-            return this;
+            return self;
         }
     }
     if(status === "down"){
         self.upTimeCounter = null;
         return myutils.sparkPost(websiteDown, self.spaceId);
     }
-    return this;
+    return self;
 };
 
 Space.prototype.checkWebsite =  function(urltxt,cb){
@@ -159,14 +159,14 @@ Space.prototype.checkWebsite =  function(urltxt,cb){
         cb('uriNotOkay');
         log.error("spaceObj.checkWeb : URI broken");
     }
-    return this;
+    return self;
 };
 Space.prototype.startPing =  function(){
     var self = this;
     
     self.init();
     
-    return this;
+    return self;
 };
 Space.prototype.stopPing = function(){
     var self = this;
@@ -207,7 +207,7 @@ Space.prototype.writeToFile = function(){
     });
     return;
 };
-Space.prototype.loadURLArray =  function(){
+Space.prototype.loadURLArray =  function(cb){
     var self = this;
     var reps = 900000000;
     var pingarray = self.monitored;
@@ -219,6 +219,7 @@ Space.prototype.loadURLArray =  function(){
             self.ping(website.url);
         }));
     });
+    cb("Urls load sequence is complete.");
     return pingarray;
 };
 
@@ -226,19 +227,24 @@ Space.prototype.updateURLArray = function(){
     
 };
 
-Space.prototype.dailyReport = function(){
+Space.prototype.dailyReport = function(cb){
     var self=this;
     var spaceId = process.env.SPARK_ROOM_ID;
-    var reportData =[];
     schedule.scheduleJob("Daily"+spaceId,'00 00 07 00 * * 0-7', function(){
         self.immediateReport();
         
     });
-    return this;
+    cb("Request has been processed...");
+    return self;
 };
-Space.prototype.cancelDailyReport = function(){
-    
+Space.prototype.cancelSchedule = function(cb){
+    var self = this;
+    var spaceId = process.env.SPARK_ROOM_ID;
+    schedule.cancelJob("Daily"+spaceId);
+    cb("Request has been processed...");
+    return self;
 };
+
 Space.prototype.immediateReport = function(){
     var self=this;
     var spaceId = process.env.SPARK_ROOM_ID;

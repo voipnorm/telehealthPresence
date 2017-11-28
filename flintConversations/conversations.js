@@ -79,6 +79,8 @@ module.exports = function(flint){
                     return convoFunc.report(text, bot, trigger,spData);
                 case (/(^| )\/url( |.|$)/).test(request):
                     return convoFunc.url(text, bot, trigger);
+                case (/(^| )\/schedule( |.|$)/).test(request):
+                    return convoFunc.schedule(text, bot, trigger,spData);
                 default:
                     convoFunc.finalChoice(text, bot, trigger);
             }
