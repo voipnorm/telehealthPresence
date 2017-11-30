@@ -33,8 +33,9 @@ Ping.prototype.init = function(){
     var self =  this;
     var delay = self.delay;
     var reps = self.repetitions;
-    log.info("spaceObj.init ... ping started");
+    log.info("spaceObj.init ..loading ping");
     self.pingInterval(delay, reps, function(){
+        log.info("pingObject.init moving to starting ping...")
         self.ping(self.website);
     });
     return self;
@@ -43,6 +44,7 @@ Ping.prototype.init = function(){
 Ping.prototype.pingInterval = function(delay, repetitions, cb){
     var self = this;
     var x = 0;
+    log.info("ping.PingInterval loaded. Delay ="+delay+ ",reps = "+repetitions);
     self.handle = setInterval(function () {
         if (++x === repetitions) {
             cb();
@@ -113,12 +115,12 @@ Ping.prototype.pingReport = function(status, code, urlString){
                     " Code: "+code;
     var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" has taken a tumble or is unknown.<br>"+
                     " Code: "+code+"<br>"+
-                    "To stop alerts use **/monitor** *halt* command.";
+                    "To stop alerts use **/stopMonitor** command.";
     if(status === "up"){
         ++self.upTimeCounter
         if(self.upTime === self.upTimeCounter){
             self.upTimeCounter = 0;
-        return myutils.sparkPost(websiteUp, self.spaceId)
+        return myutils.sparkPost(websiteUp, process.env.SPARK_ROOM_ID)
             
         }else{
             return self;
@@ -126,7 +128,7 @@ Ping.prototype.pingReport = function(status, code, urlString){
     }
     if(status === "down"){
         self.upTimeCounter = null;
-        return myutils.sparkPost(websiteDown, self.spaceId);
+        return myutils.sparkPost(websiteDown, process.env.SPARK_ROOM_ID);
     }
     return self;
 };
@@ -142,7 +144,7 @@ Ping.prototype.stopPing = function(){
     var self = this;
     clearInterval(self.handle);
     self.handle = null;
-    myutils.sparkPost("Monitor is now halted.", self.spaceId);
+    myutils.sparkPost("Monitor is now halted.", process.env.SPARK_ROOM_ID);
     self.updateWebsite(null);
     self.upTimeCounter = 0;
     return self;

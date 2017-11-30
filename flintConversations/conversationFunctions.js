@@ -266,7 +266,9 @@ module.exports = {
         return;
     },
     stopMonitor: function(request, bot, trigger, spData){
-        
+        spData.stopMonitor(function(){
+            return bot.say("Monitoring has been halted for all URLS.")
+        })
          return;
     },
     updateUrls: function(request,bot,trigger,spData){

@@ -73,6 +73,8 @@ module.exports = function(flint){
                     return convoFunc.printRecords(text, bot, trigger);
                 case (/(^| )\/loadUrls( |.|$)/).test(request):
                     return convoFunc.loadUrls(text, bot, trigger,spData);
+                case (/(^| )\/stopMonitor( |.|$)/).test(request):
+                    return convoFunc.stopMonitor(text, bot, trigger,spData);
                 case (/(^| )\/updateUrls( |.|$)/).test(request):
                     return convoFunc.updateUrls(text, bot, trigger,spData);
                 case (/(^| )\/deleteUrls( |.|$)/).test(request):

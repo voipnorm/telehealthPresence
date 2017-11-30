@@ -83,7 +83,7 @@ Space.prototype.loadURLArray =  function(cb){
         var delay =  (website.interval * (60 * 1000));
         log.info("space.loadURLArray : "+website.url+" is loading....");
         var pingObj = new Ping({url: website.url, delay: delay, reps: reps});
-        pingObj.init();
+        pingObj.startPing();
         pingarray.push(pingObj);
     });
     cb("Urls load sequence is complete.");

@@ -42,7 +42,8 @@ var commands =  "**/command**             - A list of currently available comman
                 "**/who**                 - See all the email addresses for everyone in the space.<br>"+
                 "**/xmpp** *domain*       - Does a SRV record look up for XMPP record.";
 var adminCommands =  "**/adminCommand**             - A list of currently available commands.<br>"+
-                "/spaceID <br> /spaceCount <br> /adminCommand <br>/broadcast <br> /who"
+                "/spaceID <br> /spaceCount <br> /adminCommand <br>/broadcast <br> /who <br> /loadUrls <br> /stopMonitor <br>"+
+                "/udpateUrls <br> /deleteUrls <br> /report";
 
 var helpTextSetup = [welcome+setup+step1+step2+step3,additionalCommands+rmSettings+inRoomFeedback];
 
