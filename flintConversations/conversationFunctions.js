@@ -259,11 +259,19 @@ module.exports = {
         return  txt+srv;
     },
     loadUrls: function(request, bot, trigger, spData){
+        var text = request.split(' ');
+        var upTimeCounter = text[1];
         bot.say("Urls loading in progress.....");
-        spData.loadURLArray(function(data){
-            bot.say(data);
+        if(!upTimeCounter) upTimeCounter = 6;
+        spData.loadURLArray(upTimeCounter, function(err,data){
+            if(err){ 
+                log.error("conversationFunc.loadUrls : tried to reload process already running");
+                return bot.say("Monitor already started please stop current monitor before starting.")
+                
+            };
+            return bot.say(data);
         });
-        return;
+        
     },
     stopMonitor: function(request, bot, trigger, spData){
         spData.stopMonitor(function(){

@@ -74,25 +74,29 @@ Space.prototype.writeToFile = function(){
     });
     return;
 };
-Space.prototype.loadURLArray =  function(cb){
+Space.prototype.loadURLArray =  function(reportTiming, cb){
     var self = this;
     var reps = 900000000;
     var pingarray = self.monitored;
     log.info("space.loadURLArray : is loading....");
+    if(pingarray.length!= 0){
+        return cb(new Error("Monitor already in progress, tried to start second time"), null);
+        
+    }
     _.forEach(self.webUrls, function(website){
         var delay =  (website.interval * (60 * 1000));
         log.info("space.loadURLArray : "+website.url+" is loading....");
-        var pingObj = new Ping({url: website.url, delay: delay, reps: reps});
+        var pingObj = new Ping({url: website.url, delay: delay, reps: reps, upTime:reportTiming});
         pingObj.startPing();
         pingarray.push(pingObj);
     });
-    cb("Urls load sequence is complete.");
+    cb(null,"Urls load sequence is complete.");
     return pingarray;
 };
 Space.prototype.stopMonitor = function(cb){
     var self = this;
     var pingarray = self.monitored;
-    pingarray = [];
+    pingarray.length = 0;
     cb("Website monitor halted");
 };
 Space.prototype.updateURLArray = function(newUrl, cb){

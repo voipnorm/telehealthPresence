@@ -12,9 +12,11 @@ function Ping(data){
     //urls used for constant monitoring
     this.website = data.url;
     //uptime count before sending uptime message
-    this.upTime = 4;
+    this.upTime = data.upTime;
     //counter for when to send up time message
     this.upTimeCounter = 0;
+    //total time running monitor
+    this.runningCounter = 0;
     //delay between ping website checks
     this.delay = data.delay;
     //number of repititions before ending monitor service
@@ -44,7 +46,7 @@ Ping.prototype.init = function(){
 Ping.prototype.pingInterval = function(delay, repetitions, cb){
     var self = this;
     var x = 0;
-    log.info("ping.PingInterval loaded. Delay ="+delay+ ",reps = "+repetitions);
+    log.info("ping.PingInterval loaded. Delay ="+delay+ ",reps = "+repetitions+ "report delay ="+self.upTime);
     self.handle = setInterval(function () {
         if (++x === repetitions) {
             cb();
@@ -111,23 +113,23 @@ Ping.prototype.ping = function(urlString){
 Ping.prototype.pingReport = function(status, code, urlString){
     var self = this;
     var time = Date.now();
-    var websiteUp = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" is currently up and has been responding for the last hour.<br>"+
-                    " Code: "+code;
-    var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" has taken a tumble or is unknown.<br>"+
-                    " Code: "+code+"<br>"+
-                    "To stop alerts use **/stopMonitor** command.";
+    ++self.runningCounter;
+    
     if(status === "up"){
-        ++self.upTimeCounter
+        ++self.upTimeCounter;
         if(self.upTime === self.upTimeCounter){
             self.upTimeCounter = 0;
-        return myutils.sparkPost(websiteUp, process.env.SPARK_ROOM_ID)
-            
-        }else{
-            return self;
+            var websiteUp = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" is currently up.<br>"+
+                    " Code: "+code +"<br> Monitoring has been running for "+(self.delay/60000)*self.runningCounter/60+" hours.";
+            return myutils.sparkPost(websiteUp, process.env.SPARK_ROOM_ID);
+            }else{
+                return self;
         }
     }
     if(status === "down"){
         self.upTimeCounter = null;
+        var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" has taken a tumble or is unknown.<br>"+
+                    " Code: "+code+"<br>To stop alerts use **/stopMonitor** command.";
         return myutils.sparkPost(websiteDown, process.env.SPARK_ROOM_ID);
     }
     return self;
