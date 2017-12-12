@@ -122,7 +122,9 @@ Space.prototype.removeURLArray = function(oldUrl, cb){
 Space.prototype.dailyReport = function(cb){
     var self=this;
     var spaceId = process.env.SPARK_ROOM_ID;
+    log.info('Space.object: Processing daily report request....');
     schedule.scheduleJob("Daily"+spaceId,'00 00 07 00 * * 0-7', function(){
+        log.info("Space.object : daily report delivered.");
         self.immediateReport();
         
     });

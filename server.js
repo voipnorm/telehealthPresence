@@ -5,6 +5,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
 var log = require('./svrConfig/logger');
+var hydra= require('./svrConfig/hydra');
 
 var app = express();
 
