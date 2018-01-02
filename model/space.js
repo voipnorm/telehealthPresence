@@ -7,6 +7,7 @@ var _ = require('lodash');
 var log = require('../svrConfig/logger');
 var schedule = require('node-schedule');
 var Ping = require('../myutils/ping');
+//var XmppUser = require('../myutils/xmpp');
 //pass in object versus single values
 function Space(data){
     //space ID
@@ -24,7 +25,8 @@ function Space(data){
     this.webUrls = data.webUrls;
     //ongoing monitored sites
     this.monitored = [];
-    
+
+
 }
 
 util.inherits(Space,EventEmitter);

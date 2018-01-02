@@ -119,7 +119,7 @@ Ping.prototype.pingReport = function(status, code, urlString){
         ++self.upTimeCounter;
         if(self.upTime === self.upTimeCounter){
             self.upTimeCounter = 0;
-            var websiteUp = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" is currently up.<br>"+
+            var websiteUp = ">**"+self.getFormatedDate(time)+" UTC**: Cart "+urlString+" is currently up.<br>"+
                     " Code: "+code +"<br> Monitoring has been running for "+(self.delay/60000)*self.runningCounter/60+" hours.";
             return myutils.sparkPost(websiteUp, process.env.SPARK_ROOM_ID);
             }else{
@@ -128,7 +128,7 @@ Ping.prototype.pingReport = function(status, code, urlString){
     }
     if(status === "down"){
         self.upTimeCounter = null;
-        var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Website "+urlString+" has taken a tumble or is unknown.<br>"+
+        var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Cart "+urlString+" has taken a tumble or is unknown.<br>"+
                     " Code: "+code+"<br>To stop alerts use **/stopMonitor** command.";
         return myutils.sparkPost(websiteDown, process.env.SPARK_ROOM_ID);
     }

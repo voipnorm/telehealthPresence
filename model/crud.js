@@ -1,8 +1,10 @@
 var Space = require('./space');
+var Cart = require('./cart');
 var fs = require('fs');
 var _= require('lodash');
 var log = require('../svrConfig/logger');
 var spaceDataObj = [];
+var cartDataObj = [];
 
 //spaceId, spaceActive, city, campus, bldg,timeZone, setup, conversation
 exports.createSpace = function(spaceId, callback){
@@ -21,6 +23,7 @@ exports.createSpace = function(spaceId, callback){
     });
     
 };
+
 exports.findSpace = function(spaceIdString, callback){
     log.info('crud.findspace space find called by:'+spaceIdString);
     var foundspace = _.find(spaceDataObj, {spaceId: spaceIdString});
@@ -79,12 +82,13 @@ function writeToJSON(callback){
 
 exports.writeToJSON = writeToJSON;
 exports.spaceDataObj = spaceDataObj;
+exports.cartDataObj = cartDataObj;
 
 
 
 
 var spacesFilePath = './model/space.json';
-
+var cartFilePath = './model/cart.json';
 //loadspaces on first load and reload from Array
 //spaceId, spaceActive, city, campus, bldg,timeZone, setup, conversation
 function loadSpaces(callback){
@@ -107,7 +111,26 @@ function loadSpaces(callback){
         }
     });
 }
+function loadcarts(callback){
 
+    readFile(cartFilePath,function(array){
+        var jobCount = array.length;
+        if(array.length === 0){
+            return callback();
+        }else{
+            _.forEach(array, function(data){
+
+
+
+                cartDataObj.push(new Cart(data));
+
+
+                if(--jobCount === 0) return callback();
+            });
+
+        }
+    });
+}
 //read spaces file back into memory
 function readFile(file, callback){
     var content='';
@@ -126,6 +149,10 @@ function readFile(file, callback){
 }
 //start process
 function startUp(){
+    log.info("Loading carts ...")
+    loadcarts(function(){
+        log.info("crud.startUp: New Carts loaded : "+cartDataObj.length);
+    });
     loadSpaces(function(){
     //log.info('Starting file watcher.....')
         log.info("crud.startUp: New Active spaces loaded : "+spaceDataObj.length);

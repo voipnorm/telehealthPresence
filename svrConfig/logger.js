@@ -4,7 +4,7 @@ const winston = require('winston');
 const env = process.env.NODE_ENV;
 const {createLogger, format, transports} = require('winston');
 const {combine, timestamp, label, printf, colorize} = format;
-//const hydra = require('./hydra');
+
 
 const myFormat = printf(info => {
   return `${info.timestamp} ${info.level}: ${info.message}`;
