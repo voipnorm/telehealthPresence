@@ -6,6 +6,8 @@ var myutils = require('../myutils/myutils');
 var netTools = require('../myutils/netTools');
 var prettyjson = require('prettyjson');
 var log = require('../svrConfig/logger');
+var excel = require('../myutils/excel');
+var fs = require('fs');
 
 module.exports = {
 //test slash command
@@ -18,7 +20,7 @@ module.exports = {
             return bot.say('Hello %s! To get started just type help', trigger.personDisplayName);
         }
     },
-//Prints out help array
+    //Prints out help array
     help: function(bot){
         log.info('conversationFunctions.help : Print help');
         if(bot.isGroup){
@@ -33,7 +35,29 @@ module.exports = {
             });
         }
     },
-//prints out space settings to user
+    //moves into new cart conversation
+    newCart: function(request, bot, trigger, spData){
+        log.info('converationFunctions.newCart : Move to conversation thread.');
+        bot.say({markdown:"Lets get your new Telehealth Cart setup, to cancel just respond with **cancel** at anytime."+
+        "Please enter the name of your new Cart."});
+        return spData.updateConversationState({conversation:'newCart', state: null});
+    },
+    //bulk cart uploads via CSV
+    bulkUpload: function(request, bot, trigger, spData){
+        log.info('converationFunctions.bulkUpload : Work in progress.');
+        bot.say({markdown:"Work in progress................"});
+        log.info(trigger.files[0].type);
+        fs.writeFile('./myutils/csvUploads/endpoints.csv',trigger.files[0].binary,'base64',function(err){
+            if(err) log.error(err);
+            log.info("file upload complete... laucnching file watcher to upload endpoints");
+            excel.fileWatcher(function(){
+                log.info("conversationFunction.buildUpload: Filewatcher complete, new endpoints are added.")
+                bot.say("Your endpoints have been loaded and should be coming online shortly.")
+            })
+        });
+        return;
+    },
+    //prints out space settings to user
     settings: function(bot,spData){
         var urlArray = [];
         log.info("conversationFunctions.settings URLS : "+spData.webUrls);
@@ -95,7 +119,7 @@ module.exports = {
     reset: function(request, bot, trigger, spData){
         log.info('conversationFunctions.reset : reset space settings -> '+spData.roomId);
         bot.say("Your Space settings have been reset. To start the setup process just say 'hi' to begin.");
-        return spData.conversation = 'commands';
+        return spData.conversationState = 'commands';
     
     },
 
@@ -257,71 +281,6 @@ module.exports = {
         console.log(srv);
         var txt = "DNS SRV external records recommended for your video/MRA deployment:\n";
         return  txt+srv;
-    },
-    loadUrls: function(request, bot, trigger, spData){
-        var text = request.split(' ');
-        var upTimeCounter = text[1];
-        bot.say("Urls loading in progress.....");
-        if(!upTimeCounter) upTimeCounter = 6;
-        spData.loadURLArray(upTimeCounter, function(err,data){
-            if(err){ 
-                log.error("conversationFunc.loadUrls : tried to reload process already running");
-                return bot.say("Monitor already started please stop current monitor before starting.")
-                
-            };
-            return bot.say(data);
-        });
-        
-    },
-    stopMonitor: function(request, bot, trigger, spData){
-        spData.stopMonitor(function(){
-            return bot.say("Monitoring has been halted for all URLS.")
-        })
-         return;
-    },
-    updateUrls: function(request,bot,trigger,spData){
-        var text = request.split(' ');
-        var website = text[1];
-        spData.checkWebsite(website , function(status){
-                if(status === 'uriOkay'){
-                    spData.updateURLArray(website);
-                    bot.say("Websites monitored update : "+website);
-                }else{
-                    bot.say("This URL you entered had some issues. Please try again.");
-                }
-            });
-        return;
-    },
-    deleteUrls: function(website,bot,trigger,spData){
-        spData.removeURLArray(website, function(data){
-            return bot.say("Website removed: "+website);
-        });
-    },
-    
-    url: function(request, bot,trigger){
-        var text = request.split(' ');
-        var url = text[1];
-        netTools.parseURL(url, function(data){
-            bot.say({markdown:data});
-        });
-    },
-    report: function(request, bot, trigger, spData){
-        return spData.immediateReport();
-    },
-    schedule: function(request, bot, trigger, spData){
-        var text = request.replace("/schedule ",'');
-        if(text === "true"){
-            spData.dailyReport(function(){
-                return bot.say("Daily report request has been processed and is enabled.");
-            });
-        }else if(text==="false"){
-           spData.cancelSchedule(function(){
-               return bot.say("Daily report request has been processed and is disabled.");
-           }) 
-        }else{
-            return bot.say("Your request could not be processed please use only true or false after the **/schedule** command.");
-        }
-        
     },
 //default switch command
     finalChoice: function(request, bot, trigger){

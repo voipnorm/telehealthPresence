@@ -19,7 +19,7 @@ function Space(data){
     //setting not in use
     this.dnsServer = null;
     //setting not in use
-    this.conversation = data.conversation;
+    this.conversationState = data.conversationState;
     
     //urls used for constant monitoring
     this.webUrls = data.webUrls;
@@ -30,6 +30,17 @@ function Space(data){
 }
 
 util.inherits(Space,EventEmitter);
+
+Space.prototype.updateConversationState =  function(obj){
+    var self = this;
+    self.conversationState = {
+        conversation: obj.conversation,
+        state: obj.state,
+        cartName: null,
+        ipAddress: null
+    };
+    return self;
+};
 
 
 Space.prototype.checkWebsite =  function(urltxt,cb){
@@ -71,6 +82,14 @@ Space.prototype.updateSetup = function(param){
 Space.prototype.writeToFile = function(){
     var self = this;
     crud.writeToJSON(function(){
+        log.info("spaceObj.Writing to file......");
+        self.emit('writeComplete');
+    });
+    return;
+};
+Space.prototype.writeCartToFile = function(){
+    var self = this;
+    crud.writeCartToJSON(function(){
         log.info("spaceObj.Writing to file......");
         self.emit('writeComplete');
     });

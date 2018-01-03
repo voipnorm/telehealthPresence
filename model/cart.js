@@ -20,7 +20,7 @@ function Cart(data){
     this.xmppPwd = data.xmppPwd;
     this.xmppServer = data.xmppServer;
     this.interval = 1;
-    this.reportTiming =  6;
+    this.reportTiming =  60;
     this.url = "http://"+this.cartIP+"/web/signin?next=/web/users";
     this.pingObj = {};
     this.init();

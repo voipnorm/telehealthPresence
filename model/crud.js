@@ -1,3 +1,4 @@
+require('dotenv').config();
 var Space = require('./space');
 var Cart = require('./cart');
 var fs = require('fs');
@@ -13,15 +14,40 @@ exports.createSpace = function(spaceId, callback){
                 "spaceId" : spaceId,
                 "spaceActive" : 'true',
                 "setup" : 'complete', //change to null is welcome script is required
-                "conversation" : null
+                "conversationState" : {conversation:'commands', state: null}
                 };
     var newSpace = new Space(spaceObj);
     spaceDataObj.push(newSpace);
-    
+
     writeToJSON(function(){
         callback(newSpace);
     });
     
+};
+
+exports.createCart = function(cart, callback){
+    log.info(" Cart being created " +cart.cartName);
+    var cartObj = {
+        "cartName":cart.cartName,
+        "xmppJID":cart.JID,
+        "xmppPwd":process.env.XMPPCARTPWD,
+        "xmppServer":process.env.XMPPSERVER,
+        "cartIP":cart.ipAddress
+    };
+
+    //placeholder password used for testing, new cart adds in production should work once password changed
+    if(process.env.XMPPCARTPWD != "placeholder"){
+        var newCart = new Cart(cartObj);
+        cartDataObj.push(newCart);
+        writeCartToJSON(function(){
+            callback(newCart);
+        });
+    }else{
+        log.info("crud.createCart: Simulating writing to file completed.");
+        callback("Cart up date simulation complete");
+    }
+
+
 };
 
 exports.findSpace = function(spaceIdString, callback){
@@ -33,6 +59,7 @@ exports.findSpace = function(spaceIdString, callback){
     log.info('crud.findspace Found space Id: '+foundspace.spaceId);
     return callback(null,foundspace);
 };
+
 exports.deleteSpace = function(spaceIdString, callback){
     var spaceIndex = _.findIndex(spaceDataObj, {spaceId: spaceIdString});
     
@@ -41,6 +68,7 @@ exports.deleteSpace = function(spaceIdString, callback){
     
     return callback(null, "Space deleted : "+spaceIndex);
 };
+
 exports.activeRoomCounter = function(callback){
         var activeSpace = 0;
         _.forEach(spaceDataObj, function(space){
@@ -59,7 +87,7 @@ function writeToJSON(callback){
                 "spaceActive" : space.spaceActive,
                 "setup" : space.setup||null,
                 "dnsServer" : space.dnsServer||null,
-                "conversation" : space.conversation||"commands",
+                "conversationState" : {"conversation":space.conversation||"commands"},
                 "webUrls":space.webUrls
                 };
         spArray.push(spaceObj);
@@ -80,6 +108,36 @@ function writeToJSON(callback){
     
 }
 
+function writeCartToJSON(callback){
+    var cartArray = [];
+    var jobCount = cartDataObj.length;
+    log.info('crud.writeToJSON: Cart being writen to file');
+    _.forEach(cartDataObj, function(cart){
+        var cartObj = {
+            "cartName":cart.cartName,
+            "xmppJID":cart.JID,
+            "xmppPwd":process.env.XMPPCARTPWD,
+            "xmppServer":process.env.XMPPSERVER,
+            "cartIP":cart.ipAddress
+        };
+        cartArray.push(cartObj);
+        if(--jobCount === 0 ){
+            fs.writeFile("./model/cart.json", JSON.stringify(cartArray, null , 2), function(err) {
+                if(err) {
+                    log.info(err);
+
+                }else{
+                    log.info("crud.writeToJSON: Output saved to /spaces.json.");
+                    return callback();
+                }
+
+            });
+        }
+
+    });
+
+}
+exports.writeCartToJSON = writeCartToJSON;
 exports.writeToJSON = writeToJSON;
 exports.spaceDataObj = spaceDataObj;
 exports.cartDataObj = cartDataObj;

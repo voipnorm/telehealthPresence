@@ -1,7 +1,7 @@
 var myutils = require("./myutils");
 
 //help chat text used in help command
-var welcome = "**Hi!Welcome to NetTools Bot. I can help with DNS and external Cisco Expressway configuration.<br>**";
+var welcome = "**Hi!Welcome to Telehealth Presence Bot. I can help with DNS and external Cisco Expressway configuration.<br>**";
 var firstTime = "**Hi."+
     " Thanks for inviting me to the space. Please use the **/help or just help** to get started and see supported features.";
 var setup = "";
@@ -24,7 +24,7 @@ var inRoomFeedbackGroup = " <br>To provide feedback in the space your using use 
 var commands =  "**/command**             - A list of currently available commands.<br>"+
                 "**/expressway** *domain* - Does a lookup for all SRV records for Cisco UC Expressway.<br>"+
                 "**/expscan** *domain*    - Does a lookup for Cisco UC Expressway SRV records and scans for open ports using TCP sockets.<br>"+
-                "**/feedback** *text*     - Send feedback or issues to Nettools creators.<br>"+
+                "**/feedback** *text*     - Send feedback or issues to Telehealth Presence creators.<br>"+
                 
                 "**/help**                - Space setup instructions.<br>"+
                 "**/lookup** *domain*       - Lookup a domain based on IPv4.<br>"+
@@ -32,7 +32,7 @@ var commands =  "**/command**             - A list of currently available comman
                 "**/monitor** *website*     - Allows you to monitor a single resolvable URL for 24 hour peroid using http/https request.<br>"+
                 "**/monitor halt**          - Stops website monitoring in progress.<br>"+
                 "**/printrecords** *domain* - See what external records are required for your Cisco Expressway deployment.<br>"+
-                "**/release**             - See recent updates and features added to NetTools Bot and whats coming.<br>"+
+                "**/release**             - See recent updates and features added to Telehealth Presence Bot and whats coming.<br>"+
                 "**/resolve** *type* *domain* - Resolve the following record types: A, AAAA, MX, TXT, SRV, PTR, NS, CNAME, SOA, NAPTR."+
                 " Example usage is **/resolve A** *google.com* .<br>"+
                 "**/settings**            - Shows your current space settings.<br>"+

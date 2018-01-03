@@ -129,7 +129,7 @@ Ping.prototype.pingReport = function(status, code, urlString){
     if(status === "down"){
         self.upTimeCounter = null;
         var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Cart "+urlString+" has taken a tumble or is unknown.<br>"+
-                    " Code: "+code+"<br>To stop alerts use **/stopMonitor** command.";
+                    " Code: "+JSON.stringify(code);
         return myutils.sparkPost(websiteDown, process.env.SPARK_ROOM_ID);
     }
     return self;
