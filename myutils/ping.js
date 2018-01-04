@@ -13,8 +13,10 @@ function Ping(data){
     this.website = data.url;
     //uptime count before sending uptime message
     this.upTime = data.upTime;
-    //counter for when to send up time message
+    this.downTime = 3;
+    //counter for when to send up time or down time messages
     this.upTimeCounter = 0;
+    this.downTimeCounter = 0;
     //total time running monitor
     this.runningCounter = 0;
     //delay between ping website checks
@@ -116,6 +118,7 @@ Ping.prototype.pingReport = function(status, code, urlString){
     ++self.runningCounter;
     
     if(status === "up"){
+        self.downTimeCounter = null;
         ++self.upTimeCounter;
         if(self.upTime === self.upTimeCounter){
             self.upTimeCounter = 0;
@@ -128,11 +131,17 @@ Ping.prototype.pingReport = function(status, code, urlString){
     }
     if(status === "down"){
         self.upTimeCounter = null;
-        var websiteDown = ">**"+self.getFormatedDate(time)+" UTC**: Cart "+urlString+" has taken a tumble or is unknown.<br>"+
-                    " Code: "+JSON.stringify(code);
-        return myutils.sparkPost(websiteDown, process.env.SPARK_ROOM_ID);
+        ++self.downTimeCounter;
+        if(self.downTime === self.downTimeCounter) {
+            self.downTimeCounter = 0;
+            var websiteDown = ">**" + self.getFormatedDate(time) + " UTC**: Cart " + urlString + " has taken a tumble or is unknown.<br>" +
+                " Code: " + JSON.stringify(code);
+            return myutils.sparkPost(websiteDown, process.env.SPARK_ROOM_ID);
+        }else{
+            return self;
+        }
     }
-    return self;
+
 };
 
 Ping.prototype.startPing =  function(){

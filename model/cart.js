@@ -60,6 +60,8 @@ Cart.prototype.xmppInit =  function(){
     });
     self.presenceStatusMonitor();
     self.xmppUser.setPresence('away', self.cartName+' is coming online, please stand by');
+    self.onError();
+    self.onClose();
     return self;
 };
 
@@ -84,6 +86,26 @@ Cart.prototype.presenceStatusMonitor =  function(){
     });
 
     return self;
+};
+
+Cart.prototype.onClose = function(){
+    var self = this;
+    self.xmppUser.on('close', function() {
+        log.info('cart.onClose: connection has been closed!');
+        setTimeout(function(){
+            self.xmppInit();
+            }
+            , 120000);
+    });
+};
+
+Cart.prototype.onError =  function(){
+    var self = this;
+    self.xmppUser.on('error', function(err) {
+        log.error(err);
+        myutils.sparkPost(self.cartName+" XMPP account has taken a tumble please attend to its needs: "+err, process.env.SPARK_ROOM_ID);
+
+    });
 };
 
 module.exports = Cart;
