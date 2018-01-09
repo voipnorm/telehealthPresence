@@ -1,34 +1,34 @@
-# ChatBot Monitor Bot
+# Telehealth Presence Application
 
-ChatBot Monitor Bot Bot is a chatbot netowrk monitoring bot designed for Cisco Spark. 
-This bot is meant for admins to track and troubleshoot their chat bot deployments, not an end user chat bot.
-This bot is solely driven by commands.
+A mix of Spark bot and XMPP application, TPA allows additional XMPP presence states for CIsco video codecs inside of a Jabber XMPP environment.
+
+There are three components to this application:
+* XMPP account registration for telehealth carts
+* Spark chat bot to do reporting and control of application(bulk uploads and application troubleshooting)
+* Tracking availability of video endpoint administration pages to verify endpoint availability for enhanced presence status
+
+All three pieces work together to create an application that can add additional presence states for video endpoints similar to Cisco Movi.
+
+
 
 ## Getting Started
 
-ChatBot Monitor Bot is meant to be a base to which to build. Although it does not use a database for storing 
-space data adding one should be as simple of replacing the crud file with your own database methods.
+The following applications and hardware are required:
 
-ChatBot Monitor Bot uses a json file to store a limited set of space data which is loaded on startup and rewriten on new space adds and removals.
-Its simple but limited. <example.json> is a blank JSON file meant as a placeholder for space.json to be built.
+* Cisco Unified Communications Manager
+* Cisco Presence Server
+* Cisco Video endpoint
+* Cisco Spark
+* Nodejs
 
 ### Prerequisites
 
-Nodejs, node-flint.
+Configuration required:
 
-Monitored bots require the ability to respond to http requests.Express example below:
+* Video endpoint registration in CUCM
+* CUCM end user account enabled for Presence Server
+* Cisco Spark Bot account
 
-```javascript
-app.get('/monitor', function (req, res) {
-  var roomCount = flint.bots.length;
-  var json_response = {
-    'name':'Bot being monitored',
-    'roomCount': roomCount
-  };
-  res.status(200).json(json_response);
-  res.end();
-});
-```
 
 ### Installing
 
@@ -36,7 +36,7 @@ app.get('/monitor', function (req, res) {
 ```bash
 mkdir myproj
 cd myproj
-git clone https://github.com/voipnorm/nodeMonV2.git
+git clone https://github.com/voipnorm/telehealthPresence.git
 npm install
 ```
 
@@ -50,6 +50,9 @@ NODE_ENV=development
 SPARK_BOT_STRING= <bot texted string>
 ALLOW_DOMAIN= <authorised dmain>
 APP_ADMIN= <admin email> 
+XMPPSERVER=<your presence server>
+XMPPCARTPWD=<video cart PWD>
+
 ```
 ## Built With
 

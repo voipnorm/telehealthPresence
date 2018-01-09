@@ -1,3 +1,5 @@
+
+var tpxml = require('../myutils/tpxml');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var myutils = require('../myutils/myutils');
@@ -8,12 +10,15 @@ var schedule = require('node-schedule');
 var Ping = require('../myutils/ping');
 var xmpp = require('simple-xmpp');
 
+
 //pass in object versus single values
 function Cart(data){
 
     this.cartIP = data.cartIP;
     this.cartStatus = "offline";
     this.cartName = data.cartName;
+    this.people="No";
+    this.peopleTest = data.peopleTest;
 
     //xmpp
     this.xmppJID = data.xmppJID;
@@ -33,35 +38,46 @@ util.inherits(Cart,EventEmitter);
 
 Cart.prototype.init = function(){
     var self = this;
-    self.pingCheck();
+    self.pingInit();
     self.xmppInit();
+
 };
 
-Cart.prototype.pingCheck =  function(){
+Cart.prototype.pingInit =  function(){
     var self = this;
     var reps = 900000000;
 
     log.info("cart.pingCheck : is loading....");
     var delay =  (self.interval * (60 * 1000));
     self.pingObj = new Ping({url: self.url, delay: delay, reps: reps, upTime:self.reportTiming});
-    self.pingObj.startPing();
+    //self.pingObj.startPing();
     return self;
 };
+
 
 Cart.prototype.xmppInit =  function(){
     log.info("Cart.obj: loading "+this.xmppJID);
     var self = this;
     self.xmppUser = new xmpp.SimpleXMPP();
+    self.xmppConnect();
+    self.presenceStatusMonitor();
+    self.xmppUser.setPresence('away', self.cartName+' is coming online, please stand by');
+    self.onError();
+    self.onClose();
+    return self;
+};
+
+Cart.prototype.xmppConnect =  function() {
+    var self = this;
     self.xmppUser.connect({
         "jid": self.xmppJID,
         "password": self.xmppPwd,
         "host": self.xmppServer,
         "port":5222
     });
-    self.presenceStatusMonitor();
-    self.xmppUser.setPresence('away', self.cartName+' is coming online, please stand by');
-    self.onError();
-    self.onClose();
+    self.xmppUser.on('online', function(){
+        self.pingObj.startPing();
+    });
     return self;
 };
 
@@ -71,41 +87,66 @@ Cart.prototype.presenceStatusMonitor =  function(){
 
     self.pingObj.on('up', function() {
         self.cartStatus = "online";
-        log.info("cartObj.presenceStatusMonitor: cart online.");
-        self.xmppUser.setPresence('online', self.cartName+' is available');
+        if(self.peopleTest==="true"){
+           self.peoplePresence();
+        }else {
+            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " online.");
+            self.xmppUser.setPresence('online', self.cartName + ' is available');
+        }
     });
     self.pingObj.on('down', function(){
         self.cartStatus = "offline";
-        log.info("cartObj.presenceStatusMonitor: cart offline.");
+        log.info("cartObj.presenceStatusMonitor: "+self.cartName+ " offline.");
         self.xmppUser.setPresence('dnd', self.cartName+' is not available');
     });
     self.pingObj.on('error', function(){
         self.cartStatus = "offline";
-        log.info("cartObj.presenceStatusMonitor: cart offline.");
+        log.info("cartObj.presenceStatusMonitor: cart "+self.cartName+ " offline.");
         self.xmppUser.setPresence('dnd', self.cartName+' is not available');
     });
 
     return self;
 };
+Cart.prototype.peoplePresence =  function(){
+    var self = this;
+    var cart = {
+        "username":"admin",
+        "password":this.xmppPwd,
+        "ipAddress":this.cartIP
+    };
+    tpxml.requestXML(cart, function(presence){
+        if(presence==='Yes'){
+            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied.");
+            self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
+        }else{
+            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " online.");
+            self.xmppUser.setPresence('online', self.cartName + ' is currently empty.');
+        }
 
+    });
+    return self;
+};
 Cart.prototype.onClose = function(){
     var self = this;
     self.xmppUser.on('close', function() {
         log.info('cart.onClose: connection has been closed!');
         setTimeout(function(){
-            self.xmppInit();
+            self.xmppConnect();
             }
             , 120000);
     });
+    return self;
 };
 
 Cart.prototype.onError =  function(){
     var self = this;
     self.xmppUser.on('error', function(err) {
         log.error(err);
+        self.pingObj.stopPing();
         myutils.sparkPost(self.cartName+" XMPP account has taken a tumble please attend to its needs: "+err, process.env.SPARK_ROOM_ID);
 
     });
+    return self;
 };
 
 module.exports = Cart;

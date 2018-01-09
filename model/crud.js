@@ -32,7 +32,8 @@ exports.createCart = function(cart, callback){
         "xmppJID":cart.JID,
         "xmppPwd":process.env.XMPPCARTPWD,
         "xmppServer":process.env.XMPPSERVER,
-        "cartIP":cart.ipAddress
+        "cartIP":cart.ipAddress,
+        "peopleTest":cart.peopleTest
     };
 
     //placeholder password used for testing, new cart adds in production should work once password changed
@@ -118,7 +119,9 @@ function writeCartToJSON(callback){
             "xmppJID":cart.JID,
             "xmppPwd":process.env.XMPPCARTPWD,
             "xmppServer":process.env.XMPPSERVER,
-            "cartIP":cart.ipAddress
+            "cartIP":cart.ipAddress,
+            "peopleTest":cart.peopleTest
+
         };
         cartArray.push(cartObj);
         if(--jobCount === 0 ){

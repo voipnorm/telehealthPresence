@@ -48,7 +48,7 @@ Ping.prototype.init = function(){
 Ping.prototype.pingInterval = function(delay, repetitions, cb){
     var self = this;
     var x = 0;
-    log.info("ping.PingInterval loaded. Delay ="+delay+ ",reps = "+repetitions+ "report delay ="+self.upTime);
+    log.info("ping.PingInterval loaded. Delay ="+delay+ ", reps = "+repetitions+ ", report delay ="+self.upTime);
     self.handle = setInterval(function () {
         if (++x === repetitions) {
             cb();
@@ -156,8 +156,8 @@ Ping.prototype.stopPing = function(){
     clearInterval(self.handle);
     self.handle = null;
     myutils.sparkPost("Monitor is now halted.", process.env.SPARK_ROOM_ID);
-    self.updateWebsite(null);
     self.upTimeCounter = 0;
+    log.info("pingObj.stopPing: Ping now halted on object.")
     return self;
 };
 

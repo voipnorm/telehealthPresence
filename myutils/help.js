@@ -29,8 +29,6 @@ var commands =  "**/command**             - A list of currently available comman
                 "**/help**                - Space setup instructions.<br>"+
                 "**/lookup** *domain*       - Lookup a domain based on IPv4.<br>"+
                 "**/lookup6** *domain*       - Lookup a domain based on IPv6.<br>"+
-                "**/monitor** *website*     - Allows you to monitor a single resolvable URL for 24 hour peroid using http/https request.<br>"+
-                "**/monitor halt**          - Stops website monitoring in progress.<br>"+
                 "**/printrecords** *domain* - See what external records are required for your Cisco Expressway deployment.<br>"+
                 "**/release**             - See recent updates and features added to Telehealth Presence Bot and whats coming.<br>"+
                 "**/resolve** *type* *domain* - Resolve the following record types: A, AAAA, MX, TXT, SRV, PTR, NS, CNAME, SOA, NAPTR."+
@@ -39,7 +37,6 @@ var commands =  "**/command**             - A list of currently available comman
                 "**/scan** *port* *host* - Performs a TCP port socket connection to see if port is open.<br>"+
                 "**/s4b** *domain*        - Does a SRV look up for Skype for Business Federation SRV record.<br>"+
                 "**/url** *url*           - Parse a URL using Node.js url module, shows result of the URL object produced.<br>"+
-                "**/who**                 - See all the email addresses for everyone in the space.<br>"+
                 "**/xmpp** *domain*       - Does a SRV record look up for XMPP record.";
 var adminCommands =  "**/adminCommand**             - A list of currently available commands.<br>"+
                 "/spaceID <br> /spaceCount <br> /adminCommand <br>/broadcast <br> /who <br> /loadUrls <br> /stopMonitor <br>"+
