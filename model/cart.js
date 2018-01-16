@@ -1,12 +1,11 @@
+//creates main cart object for TP endpoints including exam rooms and carts
 
+require('dotenv').config();
 var tpxml = require('../myutils/tpxml');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var myutils = require('../myutils/myutils');
-var validUrl = require('valid-url');
-var _ = require('lodash');
 var log = require('../svrConfig/logger');
-var schedule = require('node-schedule');
 var Ping = require('../myutils/ping');
 var xmpp = require('simple-xmpp');
 
@@ -110,7 +109,7 @@ Cart.prototype.presenceStatusMonitor =  function(){
 Cart.prototype.peoplePresence =  function(){
     var self = this;
     var cart = {
-        "username":"admin",
+        "username":process.env.TPADMIN,
         "password":this.xmppPwd,
         "ipAddress":this.cartIP
     };

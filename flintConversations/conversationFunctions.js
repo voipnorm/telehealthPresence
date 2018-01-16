@@ -1,3 +1,5 @@
+//Functions used by conversation commands in conversations.js file
+
 var crudDb = require('../model/crud');
 var helpFile = require('../myutils/help.js');
 var printLog = require('../myutils/changelog.js');
@@ -56,6 +58,32 @@ module.exports = {
             })
         });
         return;
+    },
+    offlineEndpointReport: function(request, bot, trigger, spData){
+        log.info('conversationFunctions.offlineEndpointReport: Work in progress');
+        crudDb.cartReporter(function(data){
+            var desStg = JSON.stringify(data)
+                .replace(/\[/g, '')
+                .replace(/\]/g, '')
+                .replace(/,/g, '')
+                .trim();
+            return bot.say({markdown: desStg});
+        });
+
+    },
+    findEndpoint: function(request, bot, trigger, spData){
+      log.info('conversationFunctions.findEndpoint: Work in progress');
+        var text = request.replace("/findEndpoint ",'').toLowerCase();
+      crudDb.findCart(text, function(err, data){
+          if(err) {
+              log.error("conversationFunction.findEndpoint"+err);
+              return bot.say("No endpoint was found by that name.")
+          }
+          var desStg = "Endpoint Name : "+data.cartName+"<br>"+
+          "IP address : "+data.cartIP+"<br>"+
+          "Status : "+data.cartStatus;
+          return bot.say({markdown: desStg});
+      });
     },
     //prints out space settings to user
     settings: function(bot,spData){

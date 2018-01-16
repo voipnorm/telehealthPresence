@@ -27,7 +27,7 @@ module.exports = function(flint){
             if(spData.conversationState.conversation === 'newCart') {
                 if(request === "cancel"){ bot.say("Request cancelled");
                     return spData.updateConversationState({conversation:'commands', state: null});
-                };
+                }
                 log.info("conversation.hears : newCart thread...." + spData.setup);
                 switch (spData.conversationState.state) {
                     case null:
@@ -45,7 +45,7 @@ module.exports = function(flint){
                     default:
                         return;
                 }
-            };
+            }
 
 
             switch (true) {
@@ -59,6 +59,10 @@ module.exports = function(flint){
                     return convoFunc.newCart(text, bot, trigger, spData);
                 case (/(^| )\/bulkUpload( |.|$)/).test(request):
                     return convoFunc.bulkUpload(text, bot, trigger, spData);
+                case (/(^| )\/offlineReport( |.|$)/).test(request):
+                    return convoFunc.offlineEndpointReport(text, bot, trigger, spData);
+                case (/(^| )\/findEndpoint( |.|$)/).test(request):
+                    return convoFunc.findEndpoint(text, bot, trigger, spData);
                 case (/(^| )\/release( |.|$)/).test(request):
                     return convoFunc.release(bot);
                 case (/(^| )\/reset( |.|$)/).test(request):

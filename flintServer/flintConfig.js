@@ -9,7 +9,7 @@ var crud = require('../model/crud');
 var conversation = require('../flintConversations/conversations');
 
 
-// Spark Websocket Intialization
+// Spark Websocket Intialization - websocket support is limited for bots
 var sparkwebsocket = new SparkWebSocket(accessToken);
 sparkwebsocket.connect(function(err,res){
   if (!err){

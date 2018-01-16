@@ -1,3 +1,5 @@
+//Ping object for checking the health of video codecs
+
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var http = require('http');

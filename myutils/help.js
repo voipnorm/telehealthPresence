@@ -1,5 +1,3 @@
-var myutils = require("./myutils");
-
 //help chat text used in help command
 var welcome = "**Hi!Welcome to Telehealth Presence Bot. I can help with DNS and external Cisco Expressway configuration.<br>**";
 var firstTime = "**Hi."+
@@ -15,8 +13,7 @@ var inRoomFeedback = "<br> To provide feedback in the space your using use **/fe
 
 //group help
 var welcomeGroup = "**Hi! **";
-var firstTimeGroup = "**Hi! **. "+
-    " Thanks for inviting me to the space. Please use the **@bot help** command to get started and see supported features. ";
+
 var setupGroup = "<br>stuff ";
 
 var inRoomFeedbackGroup = " <br>To provide feedback in the space your using use **@chatbot feedback ***your feedback* command."

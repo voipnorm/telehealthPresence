@@ -1,5 +1,6 @@
+//module for reading CSV file downloaded from Spark for uploading bulk TP endpoints - needs work on adding validy of CSV format
+
 var Excel = require('exceljs');
-var request = require('request');
 var fs = require('fs');
 var workbook = new Excel.Workbook();
 var log = require('../svrConfig/logger');
@@ -29,7 +30,7 @@ function readcsv(filename, callback){
 
 
 
-};
+}
 
 
 function fileWatcher(cb){

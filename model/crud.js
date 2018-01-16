@@ -1,3 +1,5 @@
+//load JSON and other file as well as intial opbject cart and space creation
+
 require('dotenv').config();
 var Space = require('./space');
 var Cart = require('./cart');
@@ -70,12 +72,50 @@ exports.deleteSpace = function(spaceIdString, callback){
     return callback(null, "Space deleted : "+spaceIndex);
 };
 
+exports.findCart = function(cartIdString, callback){
+    log.info('crud.findCart Cart find called by:'+cartIdString);
+    var foundcart = _.find(cartDataObj, {xmppJID: cartIdString});
+
+    if(!foundcart) return callback(new Error("cart undefined"));
+
+    log.info('crud.findspace Found cart Id: '+foundcart.cartName);
+    return callback(null,foundcart);
+};
+
+exports.deleteCart = function(cartIdString, callback){
+    var cartIndex = _.findIndex(cartDataObj, {xmppJID: cartIdString});
+
+    if(!cartIndex) return callback(new Error("space already deleted"));
+    cartDataObj.splice(cartIndex, 1);
+
+    return callback(null, "Cart deleted : "+cartIndex);
+};
+
+
 exports.activeRoomCounter = function(callback){
-        var activeSpace = 0;
-        _.forEach(spaceDataObj, function(space){
-                if(space.spaceActive === "true") ++activeSpace;
-        });
-        return callback(activeSpace);
+    var activeSpace = 0;
+    _.forEach(spaceDataObj, function(space){
+        if(space.spaceActive === "true") ++activeSpace;
+    });
+    return callback(activeSpace);
+};
+
+exports.cartReporter = function(callback){
+    var cartCount = 0;
+    var cartArray = [];
+    _.forEach(cartDataObj, function(cart){
+        if(cart.cartStatus === "offline"){
+            var newCart = {
+                "endpoint": cart.cartName,
+                "Status": cart.cartStatus,
+                "IP Address": cart.cartIP
+            };
+            cartArray.push(newCart);
+        }
+
+
+    });
+    return callback(cartArray);
 };
 
 function writeToJSON(callback){

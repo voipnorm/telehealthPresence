@@ -1,7 +1,8 @@
+//network troubleshooting functions for spark bot commands related to DNS and expressway records.
+
+
 var dns = require('dns');
 var _=require('lodash');
-var prettyjson = require('prettyjson');
-var portscanner = require('portscanner');
 var Promise = require('bluebird');
 var url = require('url');
 var validUrl = require('valid-url');
@@ -12,9 +13,9 @@ module.exports = function(){
     function lookup(domain,options,cb){
         dns.lookup(domain, options, function(err,address, family){
             if(err) {
-                log.error("netTools.lookup :"+err)
+                log.error("netTools.lookup :"+err);
                 return cb("There was an issue with "+domain+". Please try again or a different domain.")
-            };
+            }
             
             if(_.isArray(address)) return cb(parseLookup(domain,address));
             
@@ -25,9 +26,9 @@ module.exports = function(){
     function resolve(domain,rrtype,cb){
         dns.resolve(domain,rrtype, function(err,response){
             if(err) {
-                log.error("netTools.resolve :"+err)
+                log.error("netTools.resolve :"+err);
                 return cb("There was an issue with "+domain+". Please try again or a different domain.")
-            };
+            }
             var text = parseReturn(domain, response)
                         .replace(/_/g,'&#717;')
                         .trim();
@@ -51,7 +52,7 @@ module.exports = function(){
                 }
             }
             responseText = responseText.replace(/{|}|"/g,'');
-            log.info("netTools.parseLookup : "+responseText)
+            log.info("netTools.parseLookup : "+responseText);
             return responseText;
         }catch(e){
             log.info("netTools.parseLookup :"+e);
@@ -150,8 +151,8 @@ module.exports = function(){
                 .then(function(response){
                     //if(response.length>1) ++counter1;
                     if(response.error){
-                        norecordtxt.push(response.error)
-                        return processError(response.error);
+                        norecordtxt.push(response.error);
+                        return new Error(response.error);
                     }else{
                         log.info("netTools.processScanExp respknse length:"+response.length);
                         return processDns(response,record);
@@ -171,16 +172,12 @@ module.exports = function(){
                 })
                 .catch(function(err){
                     log.error("netTools.processScanExp : "+err);
+                    reject(err);
                 })
                 
                 
             });
         });
-    }
-    function processError(error){
-        return new Promise(function(resolve, reject){
-            resolve("error")
-        })
     }
     function resolveDNS(record){
         return new Promise(function(resolve, reject){

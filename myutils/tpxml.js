@@ -1,3 +1,5 @@
+//communication with video TP units though XML API.
+
 const ciscoTPClient = require('cisco-tp-client');
 const convert = require('xml2js');
 const log = require('../svrConfig/logger');
