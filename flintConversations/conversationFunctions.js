@@ -37,6 +37,11 @@ module.exports = {
             });
         }
     },
+    /*
+    *
+    * Presence related commands
+    *
+    */
     //moves into new cart conversation
     newCart: function(request, bot, trigger, spData){
         log.info('converationFunctions.newCart : Move to conversation thread.');
@@ -62,12 +67,13 @@ module.exports = {
     offlineEndpointReport: function(request, bot, trigger, spData){
         log.info('conversationFunctions.offlineEndpointReport: Work in progress');
         crudDb.cartReporter(function(data){
-            var desStg = JSON.stringify(data)
-                .replace(/\[/g, '')
-                .replace(/\]/g, '')
-                .replace(/,/g, '')
-                .trim();
-            return bot.say({markdown: desStg});
+            _.forEach(data, function(ep){
+                var newString = "Endpoint : "+ep.endpoint+"<br>"+
+                        "Status : "+ep.Status+"<br>"+
+                        "IP Address : "+ep["IP Address"];
+                        return bot.say({markdown: newString});
+            })
+
         });
 
     },
@@ -85,6 +91,11 @@ module.exports = {
           return bot.say({markdown: desStg});
       });
     },
+    /*
+     *
+     * Admin related commands
+     *
+     */
     //prints out space settings to user
     settings: function(bot,spData){
         var urlArray = [];
@@ -112,6 +123,10 @@ module.exports = {
     adminCommands: function(bot){
         log.info('conversationFunctions.adminCommands : Print commands');
         return  bot.say({markdown: helpFile.adminCommands});
+    },
+    presenceCommands: function(bot){
+        log.info('conversationFunctions.adminCommands : Print commands');
+        return  bot.say({markdown: helpFile.presenceCommands});
     },
 //internal feedback command for simple request to developers from users
     feedback: function(request, bot, trigger){
@@ -184,13 +199,12 @@ module.exports = {
             return bot.dm(process.env.APP_ADMIN,'Unauthorised attempt by this person: '+trigger.personEmail);
         }
     },
-//pass data to API.ai
-    nlp: function(request, bot, trigger, spData){
-        log.info('conversationFunctions.nlp : Request to API.AI');
-        myutils.apiAiConversation(request,bot,trigger,spData,function(data){
-            return bot.say({markdown: data});
-        });
-    },
+    /*
+     *
+     * DNS Troubleshooting tool related commands
+     *
+     */
+
     lookup: function(ver,request, bot, trigger){
         var text = request.replace('/lookup ', '')
                             .replace('/lookup6 ', '');
@@ -310,6 +324,11 @@ module.exports = {
         var txt = "DNS SRV external records recommended for your video/MRA deployment:\n";
         return  txt+srv;
     },
+    /*
+     *
+     * All else fails this is the fall back response
+     *
+     */
 //default switch command
     finalChoice: function(request, bot, trigger){
         bot.say({markdown: "I currently only respond to commands so make sure to check them out. Use the "+

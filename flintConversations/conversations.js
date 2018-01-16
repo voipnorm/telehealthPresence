@@ -77,6 +77,8 @@ module.exports = function(flint){
                         return convoFunc.commands(bot);
                 case (/(^| )\/adminCommands( |.|$)/).test(request):
                         return convoFunc.adminCommands(bot);
+                case (/(^| )\/presenceCommands( |.|$)/).test(request):
+                    return convoFunc.presenceCommands(bot);
                 case (/(^| )\/feedback( |.|$)/).test(request):
                         return convoFunc.feedback(text, bot, trigger, spData);
                 case (/(^| )\/spaceCount( |.|$)/).test(request):
