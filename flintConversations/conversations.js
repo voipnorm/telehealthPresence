@@ -57,6 +57,8 @@ module.exports = function(flint){
                     return convoFunc.help(bot);
                 case (/(^| )\/newCart( |.|$)/).test(request):
                     return convoFunc.newCart(text, bot, trigger, spData);
+                case (/(^| )\/deleteEndpoint( |.|$)/).test(request):
+                    return convoFunc.deleteEndpoint(text, bot, trigger, spData);
                 case (/(^| )\/bulkUpload( |.|$)/).test(request):
                     return convoFunc.bulkUpload(text, bot, trigger, spData);
                 case (/(^| )\/offlineReport( |.|$)/).test(request):

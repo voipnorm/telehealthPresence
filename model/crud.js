@@ -35,7 +35,7 @@ exports.createCart = function(cart, callback){
         "xmppPwd":process.env.XMPPCARTPWD,
         "xmppServer":process.env.XMPPSERVER,
         "cartIP":cart.ipAddress,
-        "peopleTest":cart.peopleTest
+        "peopleTest":"false"||cart.peopleTest
     };
 
     //placeholder password used for testing, new cart adds in production should work once password changed
@@ -85,9 +85,11 @@ exports.findCart = function(cartIdString, callback){
 exports.deleteCart = function(cartIdString, callback){
     var cartIndex = _.findIndex(cartDataObj, {xmppJID: cartIdString});
 
-    if(!cartIndex) return callback(new Error("space already deleted"));
+    if(!cartIndex) return callback(new Error("Cart already deleted"));
     cartDataObj.splice(cartIndex, 1);
-
+    writeCartToJSON(function(){
+        log.info("crud.deleteCart : Cart removed written to JOSN file " +cartIdString);
+    })
     return callback(null, "Cart deleted : "+cartIndex);
 };
 

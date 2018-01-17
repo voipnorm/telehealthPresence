@@ -4,6 +4,7 @@
     "xmppJID":"telehealth@domain.com",
     "xmppPwd":"xxxxxxx",
     "xmppServer":"your xmpp server",
-    "cartIP":"cart IP adddresss"
+    "cartIP":"cart IP adddresss",
+    "peopleTest":"false"
   }
 ]

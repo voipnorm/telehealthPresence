@@ -16,7 +16,7 @@ module.exports = {
     hello: function(request, bot, trigger){
         if(bot.isGroup){
             log.info("conversationFunctions.hello : New group hello message sent");
-            return bot.say('Hello %s! To get started just type @crb help', trigger.personDisplayName);
+            return bot.say('Hello %s! To get started just type @'+process.env.SPARK_BOT_STRING+' help', trigger.personDisplayName);
         }else{
             log.info("conversationFunctions.hello : 1:1 hello welcome sent");
             return bot.say('Hello %s! To get started just type help', trigger.personDisplayName);
@@ -48,6 +48,18 @@ module.exports = {
         bot.say({markdown:"Lets get your new Telehealth Cart setup, to cancel just respond with **cancel** at anytime."+
         "Please enter the name of your new Cart."});
         return spData.updateConversationState({conversation:'newCart', state: null});
+    },
+    deleteEndpoint: function(request, bot, trigger, spData){
+        log.info('converationFunctions.deleteEndpoint : Removing endpoint.');
+        var xmppJID = request.replace('/deleteEndpoint ', '');
+        crudDb.deleteCart(xmppJID,function(err, data){
+            if(err){
+                return bot.say({markdown:"That endpoint does not exist"});
+            }
+            return bot.say({markdown:xmppJID+" has been removed"});
+        });
+
+
     },
     //bulk cart uploads via CSV
     bulkUpload: function(request, bot, trigger, spData){
