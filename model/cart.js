@@ -96,12 +96,12 @@ Cart.prototype.presenceStatusMonitor =  function(){
     self.pingObj.on('down', function(){
         self.cartStatus = "offline";
         log.info("cartObj.presenceStatusMonitor: "+self.cartName+ " offline.");
-        self.xmppUser.setPresence('dnd', self.cartName+' is not available');
+        self.xmppUser.setPresence('dnd', self.cartName+' is currently offline.');
     });
     self.pingObj.on('error', function(){
         self.cartStatus = "offline";
-        log.info("cartObj.presenceStatusMonitor: cart "+self.cartName+ " offline.");
-        self.xmppUser.setPresence('dnd', self.cartName+' is not available');
+        log.info("cartObj.presenceStatusMonitor: cart "+self.cartName+ " offline in error.");
+        self.xmppUser.setPresence('dnd', self.cartName+' is currently offline.');
     });
 
     return self;
@@ -113,16 +113,30 @@ Cart.prototype.peoplePresence =  function(){
         "password":this.xmppPwd,
         "ipAddress":this.cartIP
     };
-    tpxml.requestXML(cart, function(presence){
+    tpxml.requestPeoplePresence(cart, function(presence){
         if(presence==='Yes'){
-            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied.");
-            self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
-        }else{
-            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " online.");
-            self.xmppUser.setPresence('online', self.cartName + ' is currently empty.');
-        }
+            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied. Do Not Disturb");
+            tpxml.requestDND(cart, function(dndStatus){
+                if(dndStatus === "Active"){
+                    self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
+                }else{
+                    self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
+                }
+            })
 
-    });
+        }else{
+            tpxml.requestDND(cart, function(dndStatus) {
+                if (dndStatus === "Active") {
+                    self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
+                } else {
+                    log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " online.");
+                    self.xmppUser.setPresence('online', self.cartName + ' is currently empty.');
+                }
+            })
+        }
+    })
+
+
     return self;
 };
 Cart.prototype.onClose = function(){
