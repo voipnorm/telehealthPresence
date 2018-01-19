@@ -103,6 +103,10 @@ module.exports = {
           return bot.say({markdown: desStg});
       });
     },
+    backup: function(request, bot, trigger, spData){
+        log.info('conversationFunctions.backup: back command called.');
+
+    },
     /*
      *
      * Admin related commands

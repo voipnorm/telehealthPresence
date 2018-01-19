@@ -65,6 +65,8 @@ module.exports = function(flint){
                     return convoFunc.offlineEndpointReport(text, bot, trigger, spData);
                 case (/(^| )\/findEndpoint( |.|$)/).test(request):
                     return convoFunc.findEndpoint(text, bot, trigger, spData);
+                case (/(^| )\/backup( |.|$)/).test(request):
+                    return convoFunc.backup(text, bot, trigger, spData);
                 case (/(^| )\/release( |.|$)/).test(request):
                     return convoFunc.release(bot);
                 case (/(^| )\/reset( |.|$)/).test(request):
