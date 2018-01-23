@@ -47,7 +47,7 @@ Cart.prototype.pingInit =  function(){
     var reps = 900000000;
 
     log.info("cart.pingCheck : is loading....");
-    var delay =  (self.interval * (60 * 1000));
+    var delay =  (self.interval * (30 * 1000));
     self.pingObj = new Ping({url: self.url, delay: delay, reps: reps, upTime:self.reportTiming});
     //self.pingObj.startPing();
     return self;
