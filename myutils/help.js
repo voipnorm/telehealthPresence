@@ -38,11 +38,11 @@ var commands =  "**/command**             - A list of currently available comman
 var adminCommands =  "**/adminCommand** - A list of currently available adminstrative commands.<br>"+
     "**/spaceID** - See the space ID of this space.<br>"+
     "**/spaceCount** - See how many spaces this application/bot has been added to.<br>"+
-    "**/broadcast** 'yourmessage' - Send a broadcast message to all users of this application.<br>"+
     "**/who** - See who all else is in the room with you.";
 
 var presenceCommands = "**/presenceCommand** - A list of currently available commands for telehealth presence functions.<br>"+
     "**/bulkUploads** - Use a CSV file to mass upload endpoints<br>"+
+    "**/broadcast** 'yourmessage' - Send a broadcast message to all online endpoints of this application.<br>"+
     "**/offlineReport** - See what endpoints are currently offline<br>"+
     "**/findEndpoint** - Find current status of an endpoint using its JID username<br>"+
     "**/newCart** - Start the new cart dialog for adding a single endpoint.<br>";

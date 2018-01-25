@@ -115,7 +115,7 @@ Cart.prototype.peoplePresence =  function(){
     };
     tpxml.requestPeoplePresence(cart, function(presence){
         if(presence==='Yes'){
-            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied. Do Not Disturb");
+            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied.");
             tpxml.requestDND(cart, function(dndStatus){
                 if(dndStatus === "Active"){
                     self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');

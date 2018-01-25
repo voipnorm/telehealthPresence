@@ -9,6 +9,7 @@ var netTools = require('../myutils/netTools');
 var prettyjson = require('prettyjson');
 var log = require('../svrConfig/logger');
 var excel = require('../myutils/excel');
+var tpxml = require('../myutils/tpxml');
 var fs = require('fs');
 
 module.exports = {
@@ -107,6 +108,30 @@ module.exports = {
         log.info('conversationFunctions.backup: back command called.');
 
     },
+    //allows broadcast to all Endpoints.
+    broadcast: function(botsArray, request, bot, trigger){
+        log.info('conversationFunctions.broadcast : all spaces broadcast message -> '+request);
+        request = request.replace("/broadcast ",'');
+
+        if(trigger.personEmail.match(process.env.APP_ADMIN)){
+            _.forEach(crudDb.cartDataObj, function(cart) {
+                if(cart.cartStatus === "online"){
+                    var cartObj = {
+                        "username":process.env.TPADMIN,
+                        "password":cart.xmppPwd,
+                        "ipAddress":cart.cartIP
+                    };
+                    tpxml.broadcastMessage(cartObj,"Important",request,"10");
+                }
+
+            });
+            bot.say({markdown:"Request has been processed"});
+        }else{
+            bot.say("Sorry but your are not authorised for this command."+
+                " The authoritities have been notified.");
+            return bot.dm(process.env.APP_ADMIN,'Unauthorised attempt by this person: '+trigger.personEmail);
+        }
+    },
     /*
      *
      * Admin related commands
@@ -153,19 +178,7 @@ module.exports = {
         return bot.say("Thank you for your feedback. For technical issues"+
         " I will get to them as soon as possible");
     },
-//allows broadcast to all Spaces.
-    broadcast: function(botsArray, request, bot, trigger){
-        log.info('conversationFunctions.broadcast : all spaces broadcast message -> '+request);
-        request = request.replace("/broadcast ",'');
-                    
-        if(trigger.personEmail.match(process.env.APP_ADMIN)){
-            _.forEach(botsArray, function(bot) { bot.say({markdown:request}); });
-        }else{
-            bot.say("Sorry but your are not authorised for this command."+
-            " The authoritities have been notified.");
-            return bot.dm(process.env.APP_ADMIN,'Unauthorised attempt by this person: '+trigger.personEmail);
-        }
-    },
+
 //print out release infospation
     release: function(bot){
         log.info('conversationFunctions.release : roadmap request');
