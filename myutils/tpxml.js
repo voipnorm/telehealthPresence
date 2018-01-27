@@ -8,13 +8,23 @@ exports.requestPeoplePresence = function(cart, callback){
         username: cart.username,
         password: cart.password
     });
+    xapi.on('error', (err) => {
+        return log.error(err);
+
+    });
+    log.info("tpxml.peoplePresence: Request sent.")
 
     return xapi.status
         .get('RoomAnalytics PeoplePresence')
         .then((people) => {
-            callback(people);
+            log.info("peoplePresence.request returned "+people);
+            return callback(null,people);
         })
-        .catch(err => log.error(err));
+        .then(()=> {
+            log.info("xapi session closed.");
+            return xapi.close();
+        })
+        .catch(err => callback(err, null));
 };
 
 
@@ -23,24 +33,41 @@ exports.requestDND = function(cart, callback) {
         username: cart.username,
         password: cart.password
     });
+    xapi.on('error', (err) => {
+        return log.error(err);
+
+    });
+    log.info("tpxml.requestDND: Request sent.")
     return xapi.status
         .get('conference DoNotDisturb')
         .then((dnd) => {
-            callback(dnd);
+            return callback(null,dnd);
         })
-        .catch(err => log.error(err));
+        .then(()=> {
+            log.info("xapi session closed.");
+            return xapi.close();
+        })
+        .catch(err => callback(err, null));
 };
 
-exports.broadcastMessage =  function(cart, title, text , duration) {
+exports.broadcastMessage =  function(cart, title, text , duration, cb) {
     const xapi = jsxapi.connect('ssh://'+cart.ipAddress, {
         username: cart.username,
         password: cart.password
+    });
+    xapi.on('error', (err) => {
+        return log.error(err);
+
     });
     return xapi.command('UserInterface Message Alert Display', {
         Title: title,
         Text: text,
         Duration: duration,
     })
-        .catch(err=> log.error(err));
+        .then(()=> {
+            log.info("xapi session closed.");
+            return xapi.close();
+        })
+        .catch(err=> cb(err, null));
 };
 

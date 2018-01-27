@@ -113,19 +113,22 @@ Cart.prototype.peoplePresence =  function(){
         "password":this.xmppPwd,
         "ipAddress":this.cartIP
     };
-    tpxml.requestPeoplePresence(cart, function(presence){
+    tpxml.requestPeoplePresence(cart, function(err, presence){
+        if(err) return log.error(err);
         if(presence==='Yes'){
-            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied.");
-            tpxml.requestDND(cart, function(dndStatus){
+            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied."+presence);
+            tpxml.requestDND(cart, function(err, dndStatus){
+                if(err) return log.error(err);
                 if(dndStatus === "Active"){
-                    self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
+                    self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb'+ dndStatus);
                 }else{
                     self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
                 }
             })
 
         }else{
-            tpxml.requestDND(cart, function(dndStatus) {
+            tpxml.requestDND(cart, function(err, dndStatus) {
+                if(err) return log.error(err);
                 if (dndStatus === "Active") {
                     self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
                 } else {
