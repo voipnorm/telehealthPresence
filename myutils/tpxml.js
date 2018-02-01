@@ -71,3 +71,15 @@ exports.broadcastMessage =  function(cart, title, text , duration, cb) {
         .catch(err=> cb(err, null));
 };
 
+exports.endpointCheck = function(){
+
+};
+
+function connectSSH (cart){
+    const xapi = jsxapi.connect('ssh://'+cart.ipAddress, {
+        username: cart.username,
+        password: cart.password
+    });
+    return xapi;
+}
+

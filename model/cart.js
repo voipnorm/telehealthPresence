@@ -2,6 +2,7 @@
 
 require('dotenv').config();
 var tpxml = require('../myutils/tpxml');
+var TpXapi = require('../myutils/tpXapi');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var myutils = require('../myutils/myutils');
@@ -23,6 +24,7 @@ function Cart(data){
     this.xmppJID = data.xmppJID;
     this.xmppPwd = data.xmppPwd;
     this.xmppServer = data.xmppServer;
+    this.endpointPwd = data.endpointPwd;
     this.interval = 1;
     this.reportTiming =  60;
     this.url = "http://"+this.cartIP+"/web/signin?next=/web/users";
@@ -110,35 +112,30 @@ Cart.prototype.peoplePresence =  function(){
     var self = this;
     var cart = {
         "username":process.env.TPADMIN,
-        "password":this.xmppPwd,
+        "password":this.endpointPwd || process.env.TPADMINPWD,
         "ipAddress":this.cartIP
     };
-    tpxml.requestPeoplePresence(cart, function(err, presence){
-        if(err) return log.error(err);
-        if(presence==='Yes'){
-            log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " occupied."+presence);
-            tpxml.requestDND(cart, function(err, dndStatus){
-                if(err) return log.error(err);
-                if(dndStatus === "Active"){
-                    self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb'+ dndStatus);
-                }else{
-                    self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
-                }
-            })
+    const videoCodec = new TpXapi(cart);
 
-        }else{
-            tpxml.requestDND(cart, function(err, dndStatus) {
-                if(err) return log.error(err);
-                if (dndStatus === "Active") {
-                    self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
-                } else {
-                    log.info("cartObj.presenceStatusMonitor: cart " + self.cartName + " online.");
-                    self.xmppUser.setPresence('online', self.cartName + ' is currently empty.');
-                }
-            })
-        }
-    })
+    return videoCodec.getEndpointData()
+        .then((endpoint) =>{
+            console.log(endpoint);
+            if(endpoint.dndActive === "Active"){
+                return self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
+            }else if(endpoint.peopleCountNumber > 0){
+                return self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Room has '+endpoint.peopleCountNumber+ " occupants.");
+            }else if(endpoint.peoplePresenceActive === "Yes"){
+                return self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
+            }else if(endpoint.callStatusActive > 0){
+                return self.xmppUser.setPresence('away', self.cartName + ' is in a Call.');
+            }else{
+                return self.xmppUser.setPresence('online', self.cartName + ' is available and unoccupied.');
+            }
 
+        })
+        .catch(err => {
+            console.log(err)
+        });
 
     return self;
 };
