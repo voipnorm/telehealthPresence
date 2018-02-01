@@ -1,7 +1,6 @@
 //creates main cart object for TP endpoints including exam rooms and carts
 
 require('dotenv').config();
-var tpxml = require('../myutils/tpxml');
 var TpXapi = require('../myutils/tpXapi');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;

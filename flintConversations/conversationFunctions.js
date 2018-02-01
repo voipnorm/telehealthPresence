@@ -118,10 +118,10 @@ module.exports = {
                 if(cart.cartStatus === "online"){
                     var cartObj = {
                         "username":process.env.TPADMIN,
-                        "password":cart.xmppPwd,
+                        "password":cart.endpointPwd,
                         "ipAddress":cart.cartIP
                     };
-                    tpxml.broadcastMessage(cartObj,"Important",request,"10", function(err, message){
+                    tpxml.broadcastMessage(cartObj,"Important",request,"20", function(err, message){
                         if(err)log.error("conversationFunction.boradcast: error "+err);
                         log.info("conversationFunctions.boradcast: broadcast to endpoints success")
                     });
