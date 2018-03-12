@@ -35,7 +35,10 @@ exports.createCart = function(cart, callback){
         "xmppPwd":process.env.XMPPCARTPWD,
         "xmppServer":process.env.XMPPSERVER,
         "cartIP":cart.ipAddress,
-        "peopleTest":"false"||cart.peopleTest
+        "peopleTest":"false"||cart.peopleTest,
+        "location": cart.location,
+        "version": cart.version
+
     };
 
     //placeholder password used for testing, new cart adds in production should work once password changed
@@ -81,7 +84,24 @@ exports.findCart = function(cartIdString, callback){
     log.info('crud.findspace Found cart Id: '+foundcart.cartName);
     return callback(null,foundcart);
 };
+exports.findOnlineEndpoint = function(callback){
+    log.info('crud.findCart Cart find online rooms');
+    var cartArray = [];
+    _.forEach(cartDataObj, function(cart){
+        if(cart.cartStatus === "online"){
+            var newCart = {
+                "Endpoint": cart.cartName,
+                "Location": cart.location,
+            };
+            cartArray.push(newCart);
+        }
 
+
+    });
+    if(cartArray.length === 0) return callback("No Endpoints available.")
+    return callback(null,cartArray);
+
+};
 exports.deleteCart = function(cartIdString, callback){
     var cartIndex = _.findIndex(cartDataObj, {xmppJID: cartIdString});
 
@@ -162,7 +182,9 @@ function writeCartToJSON(callback){
             "xmppPwd":process.env.XMPPCARTPWD,
             "xmppServer":process.env.XMPPSERVER,
             "cartIP":cart.ipAddress,
-            "peopleTest":cart.peopleTest
+            "peopleTest":cart.peopleTest,
+            "location": "San Jose",
+            "version": "unknown"
 
         };
         cartArray.push(cartObj);

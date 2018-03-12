@@ -30,6 +30,8 @@ function Cart(data){
     this.pingObj = {};
     this.init();
     this.xmppUser;
+    this.location = data.location;
+    this.version = data.version;
 
 
 }
@@ -120,14 +122,19 @@ Cart.prototype.peoplePresence =  function(){
         .then((endpoint) =>{
             console.log(endpoint);
             if(endpoint.dndActive === "Active"){
+                self.cartStatus = "dnd";
                 return self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');
             }else if(endpoint.peopleCountNumber > 0){
+                self.cartStatus = "dnd";
                 return self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Room has '+endpoint.peopleCountNumber+ " occupants.");
             }else if(endpoint.peoplePresenceActive === "Yes"){
+                self.cartStatus = "away";
                 return self.xmppUser.setPresence('away', self.cartName + ' is occupied.');
             }else if(endpoint.callStatusActive > 0){
+                self.cartStatus = "away";
                 return self.xmppUser.setPresence('away', self.cartName + ' is in a Call.');
             }else{
+                self.cartStatus = "online";
                 return self.xmppUser.setPresence('online', self.cartName + ' is available and unoccupied.');
             }
 

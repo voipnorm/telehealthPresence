@@ -5,6 +5,10 @@
     "xmppPwd":"xxxxxxx",
     "xmppServer":"your xmpp server",
     "cartIP":"cart IP adddresss",
-    "peopleTest":"false"
+    "endpointPwd":"xxxxx",
+    "peopleTest":"false",
+    "location": null,
+    "version": null
+
   }
 ]

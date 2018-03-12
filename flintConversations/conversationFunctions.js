@@ -104,6 +104,23 @@ module.exports = {
           return bot.say({markdown: desStg});
       });
     },
+    emptyRoom: function(request, bot, trigger, spData){
+        log.info('conversationFunctions.emptyRoom: Work in progress');
+        crudDb.findOnlineEndpoint(function(err, data){
+            if(err) {
+                log.error("conversationFunction.findEndpoint"+err);
+                return bot.say("No rooms are currently available.")
+            }
+            var roomString = '';
+            _.forEach(data, function(ep){
+                var newString = "Endpoint : "+ep.Endpoint+"<br>"+
+                    "Location : "+ep.Location+"<br>";
+                return roomString = roomString+newString;
+            });
+            bot.say({markdown:"I found the following available rooms:<br> "+roomString})
+
+        });
+    },
     backup: function(request, bot, trigger, spData){
         log.info('conversationFunctions.backup: back command called.');
 

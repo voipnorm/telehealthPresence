@@ -15,7 +15,7 @@ function Ping(data){
     this.website = data.url;
     //uptime count before sending uptime message
     this.upTime = data.upTime;
-    this.downTime = 3;
+    this.downTime = 10;
     //counter for when to send up time or down time messages
     this.upTimeCounter = 0;
     this.downTimeCounter = 0;
