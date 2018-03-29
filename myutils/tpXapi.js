@@ -146,9 +146,14 @@ TPXapi.prototype.peoplePresence =  function(){
                 self.peoplePresenceActive = status
                 resolve(status);
             })
-            .catch(err => reject(err));
+            .catch((err) => {
+                if (err.code === 3) {
+                    resolve(self.peopleCountNumber = {Current: -1})
+                } else(
+                    reject(err)
+                )
+            });
     })
-
 };
 
 //close ssh connection
