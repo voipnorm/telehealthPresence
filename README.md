@@ -1,13 +1,14 @@
 # Telehealth Presence Application
 
-A mix of Spark bot and XMPP application, TPA allows additional XMPP presence states for CIsco video codecs inside of a Jabber XMPP environment.
+A mix of Spark bot and XMPP application, TPA allows additional XMPP presence states for Cisco video codecs inside of a Jabber XMPP environment.
 
-There are three components to this application:
+There are a number of components to this application:
 * XMPP account registration for telehealth carts
 * Spark chat bot to do reporting and control of application(bulk uploads and application troubleshooting)
 * Tracking availability of video endpoint administration pages to verify endpoint availability for enhanced presence status
+* Poll video endpoints API for people presence and other information such as DND.
 
-All three pieces work together to create an application that can add additional presence states for video endpoints similar to Cisco Movi.
+All pieces work together to create an application that can add additional presence states for video endpoints similar to Cisco Movi.
 
 [![Jabber Endpoint presence](/img/jabberPresence.png?raw=true)]
 
