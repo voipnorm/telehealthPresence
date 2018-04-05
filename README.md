@@ -27,8 +27,10 @@ The following applications and hardware are required:
 Configuration required:
 
 * Video endpoint registration in CUCM
-* CUCM end user account enabled for Presence Server
+* CUCM end user account enabled for Presence Server for each video endpoint
+* Endpoint and end user accounts paired with each other within CUCM
 * Cisco Spark Bot account
+* Cisco Spark Space ID to send application messages.
 
 
 ### Installing

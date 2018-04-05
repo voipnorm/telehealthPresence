@@ -141,7 +141,7 @@ module.exports = {
                         "ipAddress":cart.cartIP
                     };
                     tpxml.broadcastMessage(cartObj,"Important",request,"20", function(err, message){
-                        if(err)log.error("conversationFunction.boradcast: error "+err);
+                        if(err)log.error("conversationFunction.broadcast: error "+err);
                         log.info("conversationFunctions.boradcast: broadcast to endpoints success")
                     });
                 }
