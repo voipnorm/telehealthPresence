@@ -76,6 +76,8 @@ module.exports = {
             })
         });
         return;
+    },csvFormat: function(request, bot, trigger, spData){
+        bot.say("cartName, ipAddress,JID(Jabber ID), People presence test(true or false), location")
     },
     offlineEndpointReport: function(request, bot, trigger, spData){
         log.info('conversationFunctions.offlineEndpointReport: Work in progress');

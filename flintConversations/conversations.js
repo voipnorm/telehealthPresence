@@ -61,6 +61,8 @@ module.exports = function(flint){
                     return convoFunc.deleteEndpoint(text, bot, trigger, spData);
                 case (/(^| )\/bulkUpload( |.|$)/).test(request):
                     return convoFunc.bulkUpload(text, bot, trigger, spData);
+                case (/(^| )\/csvFormat( |.|$)/).test(request):
+                    return convoFunc.csvFormat(text, bot, trigger, spData);
                 case (/(^| )\/offlineReport( |.|$)/).test(request):
                     return convoFunc.offlineEndpointReport(text, bot, trigger, spData);
                 case (/(^| )\/findEndpoint( |.|$)/).test(request):

@@ -9,7 +9,7 @@ There are three components to this application:
 
 All three pieces work together to create an application that can add additional presence states for video endpoints similar to Cisco Movi.
 
-
+[![Jabber Endpoint presence](/img/jabberPresence.png?raw=true)]
 
 ## Getting Started
 
@@ -54,6 +54,17 @@ XMPPSERVER=<your presence server>
 XMPPCARTPWD=<video cart PWD>
 
 ```
+Despcription of variables:
+* SPARK_ROOM_ID => Spark room ID used for error notification and and system messages
+* SPARK_BOT => Bot token used for direct interaction with application bot. Bot command capable.
+* WEBPORT => port used by flint framework to create websocket with Spark service.
+* NODE_ENV => development or production
+* SPARK_BOT_STRING => String used to identify bot in @ mentions from Spark 
+* ALLOW_DOMAIN => security setting to define your companies domain.
+* APP_ADMIN => admins spark ID
+* XMPPSERVER => XMPP/CUPS server ip address
+* XMPPCARTPWD => admin password for telehealth cart. Can also be specified in cart.json
+
 ## Built With
 
 * [node-flint](https://github.com/flint-bot/flint) - The bot framework used

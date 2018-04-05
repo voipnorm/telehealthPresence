@@ -16,7 +16,8 @@ function readcsv(filename, callback){
                     cartName: row[1],
                     ipAddress:row[2],
                     JID:row[3],
-                    peopleTest:row[4]
+                    peopleTest:row[4],
+                    location: row[5]||'unknown'
                 };
                 crud.createCart(cart, function(){
                     log.info("excel.readcsv: cart writen to file complete.")
