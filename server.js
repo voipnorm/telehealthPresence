@@ -12,6 +12,8 @@ const cors = require('cors');
 
 
 var app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 //rest api configuration
 require('./svrConfig/rest')(app, {});
 
@@ -21,8 +23,7 @@ app.use(cors({
     exposedHeaders: 'content-range',
 
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 // define express path for incoming webhooks
 app.post('/flint',webhook(flint));
 

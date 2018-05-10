@@ -32,7 +32,7 @@ module.exports = {
             var cart =
                 {
                     cartName:spData.conversationState.cartName,
-                    ipAddress: spData.conversationState.ipAddress,
+                    cartIP: spData.conversationState.ipAddress,
                     JID: spData.conversationState.JID
                 };
             crud.createCart(cart, function(){

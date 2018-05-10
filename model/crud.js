@@ -32,23 +32,25 @@ exports.createCart = function(cart, callback){
     var cartObj = {
         "cartName":cart.cartName,
         "xmppJID":cart.JID,
-        "xmppPwd":process.env.XMPPCARTPWD,
+        "xmppPwd":cart.xmppPwd || process.env.XMPPCARTPWD,
         "xmppServer":process.env.XMPPSERVER,
-        "cartIP":cart.ipAddress,
+        "cartIP":cart.cartIP,
+        "endpointPwd": cart.endpointPwd || process.env.TPADMINPWD,
         "peopleTest":"false"||cart.peopleTest,
-        "location": cart.location,
-        "version": cart.version
+        "location": cart.location||'Unknown',
+        "version": cart.version || "Unknown"
 
     };
 
     //placeholder password used for testing, new cart adds in production should work once password changed
-    if(process.env.XMPPCARTPWD != "placeholder"){
+    if(process.env.XMPPCARTPWD === "placeholder"){
         var newCart = new Cart(cartObj);
         cartDataObj.push(newCart);
         writeCartToJSON(function(){
             callback(newCart);
         });
     }else{
+        //needs to be removed
         log.info("crud.createCart: Simulating writing to file completed.");
         callback("Cart up date simulation complete");
     }
@@ -178,15 +180,16 @@ function writeCartToJSON(callback){
     _.forEach(cartDataObj, function(cart){
         var cartObj = {
             "cartName":cart.cartName,
-            "xmppJID":cart.JID,
-            "xmppPwd":process.env.XMPPCARTPWD,
-            "xmppServer":process.env.XMPPSERVER,
-            "cartIP":cart.ipAddress,
+            "xmppJID":cart.xmppJID,
+            "xmppPwd":cart.xmppPwd,
+            "xmppServer":cart.xmppServer,
+            "cartIP":cart.cartIP,
+            "endpointPwd":cart.endpointPwd,
             "peopleTest":cart.peopleTest,
-            "location": "San Jose",
-            "version": "unknown"
+            "location": cart.location,
+            "version": ""
 
-        };
+    };
         cartArray.push(cartObj);
         if(--jobCount === 0 ){
             fs.writeFile("./model/cart.json", JSON.stringify(cartArray, null , 2), function(err) {
