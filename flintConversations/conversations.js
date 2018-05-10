@@ -1,5 +1,5 @@
 /* 
-Module parses all incoming requests from Spark webhooks and provides the responses for the bot from the node-flint framework.
+Module parses all incoming requests from Spark webhooks/sockets and provides the responses for the bot from the node-flint framework.
 */
 require('dotenv').config();
 var crudDb = require('../model/crud');
@@ -46,8 +46,7 @@ module.exports = function(flint){
                         return;
                 }
             }
-
-
+            //Process all in coming slash commands from one on one and spaces.
             switch (true) {
                 case (/(^| )\/hello( |.|$)/).test(request):
                     return convoFunc.hello(text, bot, trigger);

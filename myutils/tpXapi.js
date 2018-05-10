@@ -1,3 +1,4 @@
+//Constructor for creating a endpoint object with video xapi. Ability to scrape multiple API's.
 const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 const log = require('../svrConfig/logger');

@@ -120,7 +120,7 @@ Cart.prototype.peoplePresence =  function(){
 
     return videoCodec.getEndpointData()
         .then((endpoint) =>{
-            console.log(endpoint);
+            log.info(cart.ipAddress+':'+JSON.stringify(endpoint));
             if(endpoint.dndActive === "Active"){
                 self.cartStatus = "dnd";
                 return self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');

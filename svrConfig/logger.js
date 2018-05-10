@@ -1,5 +1,5 @@
 'use strict';
-
+//Logging configuration
 const winston = require('winston');
 const env = process.env.NODE_ENV;
 const {createLogger, format, transports} = require('winston');
