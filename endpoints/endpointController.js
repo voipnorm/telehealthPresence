@@ -1,18 +1,31 @@
 //rest api for admin interface or general use
 var crud = require('../model/crud');
-var log = require('./logger');
+var Endpoint = require('./endpoints');
+var log = require('../svrConfig/logger');
 var carts = crud.cartDataObj;
 var range = require('express-range');
-
-
-module.exports =  function(app){
-    app.use(range({
+var VerifyToken = require('../users/VerifyToken');
+var express = require('express');
+var router = express.Router();
+var bodyParser = require('body-parser');
+var cors = require('cors');
+router.use(bodyParser.urlencoded({ extended: false }));
+router.use(bodyParser.json());
+router.use(range({
         accept: 'endpoints',
         limit: 10,
-    })),
-        //get all endpoints with content-range
-        app.get("/endpoints", function(req, res) {
+    }));
+router.use(cors({
+        origin: 'http://localhost:3000',
+        credentials: false,
+        exposedHeaders: 'content-range',
+
+}));
+    //get all endpoints with content-range
+        router.get("/",VerifyToken, function(req, res) {
+            log.info("Endpoint List verified and routing");
             let endpoints = [];
+            log.info("Endpoint request made");
             let num = carts.length;
             res.header("Access-Control-Allow-Origin", "*");
             log.info("Carts API request : "+carts.length);
@@ -39,7 +52,7 @@ module.exports =  function(app){
             }
         }),
         //get single endpoint
-        app.get("/endpoints/:id", function(req, res){
+        router.get("/:id",VerifyToken, function(req, res){
             log.info(req.params.id);
             let cartId = req.params.id;
             crud.findCart(cartId, function(err,endpoint){
@@ -59,7 +72,7 @@ module.exports =  function(app){
             })
         }),
         //get status of all endpoints
-        app.get("/status", function(req, res) {
+        router.get("/status",VerifyToken, function(req, res) {
             let endpoints = [];
             let num = carts.length;
             res.header("Access-Control-Allow-Origin", "*");
@@ -80,7 +93,7 @@ module.exports =  function(app){
             }
         }),
         //delete endpoint
-        app.delete("/endpoints/:id", function(req, res){
+        router.delete("/:id",VerifyToken, function(req, res){
             log.info(req.params.id);
             let cartId = req.params.id;
             crud.deleteCart(cartId, function(err,message){
@@ -93,43 +106,43 @@ module.exports =  function(app){
             })
         }),
         //update endpoint
-        app.put("/endpoints/:id", function(req, res){
+        router.put("/:id",VerifyToken, function(req, res){
 
         }),
-        //create endpoint
-        app.post("/endpoints/:id", function(req, res){
-            if (!req.body.cartName) return res.sendStatus(400);
+            // CREATES A NEW ENDPOINT
+        router.post('/:id',VerifyToken, function (req, res) {
 
-            log.info("new endpoint request: "+req.params.id);
-            let cartId = req.params.id;
-            crud.findCart(cartId, function(err, endpoint){
-                if(err){
-                    let newCart = {
-                        cartName : req.body.cartName,
-                        cartIP : req.body.cartIP,
-                        JID: req.body.xmppJID,
-                        xmppPwd : req.body.xmppPwd,
-                        endpointPwd: req.body.endpointPwd,
-                        peopleTest : "false"|| req.body.peopleTest,
-                        location : req.body.location,
-                        version : "unknown"
-                    };
-                    crud.createCart(newCart,function(endpoint){
-                        res.status(200).send("Update complete for: "+endpoint);
-                    })
+            Endpoint.find({xmppJID: req.params.id}, function (err, endpoint) {
+                if(err||!endpoint.length){
+                    log.info("DB Lookup Failure: "+err);
+                    try{
+                        Endpoint.create({
+                                cartName: req.body.cartName,
+                                xmppJID: req.body.xmppJID,
+                                xmppPwd: req.body.xmppPwd,
+                                xmppServer:req.body.xmppServer,
+                                cartIP: req.body.cartIP,
+                                endpointPwd: req.body.endpointPwd,
+                                peopleTest: "false" || req.body.peopleTest,
+                                location: req.body.location,
+                                version: "unknown"
+                            },
+                            function (err, endpoint) {
+                                if (err) return res.status(500).send("There was a problem adding the information to the database.");
+                                res.status(200).send(endpoint);
+                            });
+
+                    }catch(e){
+                        return res.status(500).send("Unknown DB error");
+                    }
 
                 }else{
-                    res.status(400).send({ message: 'endpoint already exists' })
+                    return res.status(500).send("DB Failure to add endpoint. Endpoint already exist")
                 }
-            })
 
+            });
+        });
 
-        })
-
-
-
-
-}
-
+module.exports = router;
 
 
