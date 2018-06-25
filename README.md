@@ -31,7 +31,7 @@ Configuration required:
 * Endpoint and end user accounts paired with each other within CUCM
 * Cisco Spark Bot account
 * Cisco Spark Space ID to send application messages.
-
+* DNS FQDN videoPresence.<your domain>:3001 eith via DNS record or host record.
 
 ### Installing
 

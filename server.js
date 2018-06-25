@@ -34,7 +34,8 @@ app.use('/api/endpoints', endpointController);
 app.use('/api/users',userController);
 app.use('/api/status', statusController);
 
-app.use(express.static(path.resolve(__dirname, 'bot')));
+app.use('/', express.static(__dirname + '/public/home', { index: 'index.html' }));
+
 
 var sslOptions = {
     key: fs.readFileSync('./certs/key.pem'),
