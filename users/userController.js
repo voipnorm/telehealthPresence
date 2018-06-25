@@ -1,10 +1,10 @@
-
-
 var express = require('express');
 var router = express.Router();
 var bodyParser = require('body-parser');
 var range = require('express-range');
 var verifyToken = require('./verifyToken');
+var log= require('../svrConfig/logger');
+var bcrypt = require('bcryptjs');
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
 var User = require('./user');
@@ -13,8 +13,9 @@ router.use(range({
     accept: 'users',
     limit: 10,
 }));
+
 router.use(cors({
-    origin: 'http://localhost:3000',
+    origin: '*',
     credentials: false,
     exposedHeaders: 'content-range',
 
@@ -22,12 +23,14 @@ router.use(cors({
 
     // CREATES A NEW USER
     router.post('/',verifyToken, function (req, res) {
-        User.create({
-                name: req.body.name,
-                email: req.body.email,
-                password: req.body.password
-            },
-            function (err, user) {
+        log.info("User Post:" +JSON.stringify(req.body));
+        var hashedPassword = bcrypt.hashSync(req.body.password, 8);
+        var newUser = {
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPassword,
+        };
+        User.create(newUser,function (err, user) {
                 if (err) return res.status(500).send("There was a problem adding the information to the database.");
                 res.status(200).send(user);
             });
@@ -35,6 +38,7 @@ router.use(cors({
 
     // RETURNS ALL THE USERS IN THE DATABASE
     router.get('/',verifyToken, function (req, res) {
+        log.info("User GET:" +JSON.stringify(req.body));
         User.find({}, function (err, users) {
             if (err) return res.status(500).send("There was a problem finding the users.");
             res.range({
@@ -42,32 +46,52 @@ router.use(cors({
                 last: req.range.last,
                 length: users.length
             });
-            res.json({data:users.slice(req.range.first, req.range.last + 1),total:users.length});;
+            res.json({data:users.slice(req.range.first, req.range.last + 1),total:users.length});
         });
     });
 
     // GETS A SINGLE USER FROM THE DATABASE
     router.get('/:id',verifyToken, function (req, res) {
-        User.findById(req.params.id, function (err, user) {
+        log.info("User GET/:ID:" +JSON.stringify(req.params.id));
+        User.find({_id:req.params.id}, function (err, user) {
             if (err) return res.status(500).send("There was a problem finding the user.");
             if (!user) return res.status(404).send("No user found.");
-            res.status(200).send(user);
+            res.status(200).json({data:user});
         });
     });
 
     // DELETES A USER FROM THE DATABASE
     router.delete('/:id',verifyToken, function (req, res) {
-        User.findByIdAndRemove(req.params.id, function (err, user) {
+        log.info("User DELETE/:ID:" +JSON.stringify(req.body));
+        User.findOneAndDelete({_id:req.params.id}, function (err, user) {
             if (err) return res.status(500).send("There was a problem deleting the user.");
+            log.info("User: " + user.name + " was deleted.");
             res.status(200).send("User: " + user.name + " was deleted.");
         });
     });
 
-    // UPDATES A SINGLE USER IN THE DATABASE
+    // UPDATES A SINGLE USER IN THE DATABASE --- TBD
     router.put('/:id',verifyToken, function (req, res) {
-        User.findByIdAndUpdate(req.params.id, req.body, {new: true}, function (err, user) {
+        log.info("User PUT/:ID:" +JSON.stringify(req.body));
+        log.info("URL ID: " + req.params.id);
+        delete req.body.id;
+        log.info("User PUT/:ID:" +JSON.stringify(req.body));
+
+        User.findById(req.params.id,function (err, user) {
+            var userPassword = user.password;
+            if (userPassword != req.body.password) {
+                userPassword = bcrypt.hashSync(req.body.password, 8)
+            }
             if (err) return res.status(500).send("There was a problem updating the user.");
-            res.status(200).send(user);
+            user.name = req.body.name;
+            user.email = req.body.email;
+            user.password = userPassword;
+            user.save(function(err){
+                if(err){return res.status(500).send("There was a problem updating the user.");}
+                log.info("Update success: "+JSON.stringify(user));
+                return res.status(200).json({data:user});
+            })
+
         });
     });
 

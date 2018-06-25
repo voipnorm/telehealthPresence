@@ -14,7 +14,7 @@ function TPXapi(endpoint){
     this.callStatusActive;
     this.dndActive;
 
-};
+}
 
 util.inherits(TPXapi,EventEmitter);
 
@@ -33,7 +33,10 @@ TPXapi.prototype.getEndpointData =  function(){
                 };
 
                 return resolve(endpoint);
-            });
+            })
+            .catch(err => {
+                return reject(err)
+            })
     });
 };
 
@@ -168,5 +171,11 @@ TPXapi.prototype.closeConnect =  function(){
         return self;
 
     })
+};
+
+TPXapi.prototype.onError =  function(){
+    self.on('error', function(err) {
+        log.error(err);
+    });
 };
 module.exports = TPXapi;

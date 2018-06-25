@@ -1,7 +1,7 @@
 # Cloud 9 files
 .c9/
 # Space date
-space.json
+oldCode/space.json
 cart.json
 #client websocket file
 device.json

@@ -2,7 +2,7 @@
 Module parses all incoming requests from Spark webhooks/sockets and provides the responses for the bot from the node-flint framework.
 */
 require('dotenv').config();
-var crudDb = require('../model/crud');
+var crudDb = require('../model/appController');
 var botString = process.env.SPARK_BOT_STRING;
 var convoFunc = require('./conversationFunctions');
 var convoNewCart = require('./conversationNewCart');

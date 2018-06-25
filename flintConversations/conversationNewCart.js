@@ -1,7 +1,7 @@
 "use strict";
 
 var log = require('../svrConfig/logger');
-var crud = require('../model/crud');
+var crud = require('../model/appController');
 //setup conversation file
 module.exports = {
     //Welcome conversation flow

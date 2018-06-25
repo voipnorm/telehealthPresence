@@ -8,25 +8,25 @@ var myutils = require('../myutils/myutils');
 var log = require('../svrConfig/logger');
 var Ping = require('../myutils/ping');
 var xmpp = require('simple-xmpp');
+var Endpoint = require('../endpoints/endpoints')
+
 
 
 //pass in object versus single values
 function Cart(data){
-
-    this.cartIP = data.cartIP;
+    this.mac = data.mac||"unknown";
+    this.cartIP = data.cartIP||"unknown";
     this.cartStatus = "offline";
     this.cartName = data.cartName;
     this.people="No";
     this.peopleTest = data.peopleTest;
-
     //xmpp
     this.xmppJID = data.xmppJID;
-    this.xmppPwd = data.xmppPwd;
+    this.xmppPwd = process.env.XMPPCARTPWD;
     this.xmppServer = data.xmppServer;
-    this.endpointPwd = data.endpointPwd;
+    this.endpointPwd = process.env.TPADMINPWD;
     this.interval = 1;
     this.reportTiming =  60;
-    this.url = "http://"+this.cartIP+"/web/signin?next=/web/users";
     this.pingObj = {};
     this.init();
     this.xmppUser;
@@ -40,6 +40,7 @@ util.inherits(Cart,EventEmitter);
 
 Cart.prototype.init = function(){
     var self = this;
+
     self.pingInit();
     self.xmppInit();
 
@@ -48,10 +49,10 @@ Cart.prototype.init = function(){
 Cart.prototype.pingInit =  function(){
     var self = this;
     var reps = 900000000;
-
+    var url = "https://"+this.cartIP+"/web/signin?next=/web/users";
     log.info("cart.pingCheck : is loading....");
     var delay =  (self.interval * (30 * 1000));
-    self.pingObj = new Ping({url: self.url, delay: delay, reps: reps, upTime:self.reportTiming});
+    self.pingObj = new Ping({url: url, delay: delay, reps: reps, upTime:self.reportTiming});
     //self.pingObj.startPing();
     return self;
 };
@@ -98,11 +99,34 @@ Cart.prototype.presenceStatusMonitor =  function(){
     });
     self.pingObj.on('down', function(){
         self.cartStatus = "offline";
-        log.info("cartObj.presenceStatusMonitor: "+self.cartName+ " offline.");
+        log.info("cartObj.presenceStatusMonitor: Event down "+self.cartName+ " offline.");
         self.xmppUser.setPresence('dnd', self.cartName+' is currently offline.');
     });
     self.pingObj.on('error', function(){
         self.cartStatus = "offline";
+        log.info("Updating this Mac: "+self.mac);
+        myutils.checkIp(self.mac, function(data){
+            if(data[0].ip != self.cartIP){
+                if(!data[0].ip){
+                    log.error("Endpoint IP Address Unknown in CUCM");
+                    myutils.sparkPost(self.cartName+" does not have a MAC address record available in CUCM, please correct this issue", process.env.SPARK_ROOM_ID);
+                }
+                else{
+                    log.info("Updating cart IP address from CUCM");
+                    self.pingObj.stopPing();
+                    self.pingObj={};
+                    self.cartIP = data[0].ip;
+                    Endpoint.findOneAndUpdate({xmppJID: self.xmppJID},{cartIP: self.cartIP}, function(err, endpoint){
+                        if(err) log.error('DB Update failed: '+err);
+                        log.info(self.cartIP);
+                        self.pingInit();
+                        self.xmppUser.setPresence('away', self.cartName+' is coming online, please stand by');
+                        log.info("Update IP address success: "+endpoint.cartName);
+                        return self;
+                    });
+                }
+            }
+        })
         log.info("cartObj.presenceStatusMonitor: cart "+self.cartName+ " offline in error.");
         self.xmppUser.setPresence('dnd', self.cartName+' is currently offline.');
     });
@@ -140,10 +164,9 @@ Cart.prototype.peoplePresence =  function(){
 
         })
         .catch(err => {
-            console.log(err)
+            log.error(err);
+            return(err)
         });
-
-    return self;
 };
 Cart.prototype.onClose = function(){
     var self = this;
@@ -167,5 +190,6 @@ Cart.prototype.onError =  function(){
     });
     return self;
 };
+
 
 module.exports = Cart;

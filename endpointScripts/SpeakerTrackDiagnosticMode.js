@@ -3,9 +3,8 @@
 * Macro companion to the SpeakerTrack Diagnostic mode
 */
 
-const xapi = require('xapi')
+const xapi = require('xapi');
 const stdID = 'STDOnOff';
-const textBoxId = 'textBoxSTD';
 let stdStatus = "Stop";
 
 function listenToGui() {
@@ -42,13 +41,6 @@ function setSTD(status){
     }
 
 }
-function toggleUpdate(status){
-    xapi.command('UserInterface Extensions Widget SetValue', {
-        WidgetId: stdID,
-        Value: status,
-    });
-}
-
 
 function textBoxUpdate(stringValue){
     xapi.command('UserInterface Extensions Widget SetValue', {

@@ -1,6 +1,6 @@
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
-var crud = require('./crud');
+var crud = require('./appController');
 var log = require('../svrConfig/logger');
 //pass in object versus single values
 function Space(data){

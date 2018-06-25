@@ -9,11 +9,11 @@ var log = require('../svrConfig/logger');
 var SpaceDB = require('../space/space');
 var EndpointDB = require('../endpoints/endpoints');
 
-module.exports =  function(spaceId, callback){
+module.exports =  function(){
     var spaceDataObj = [];
     var cartDataObj = [];
     //SPACE CRUD operations
-    function createSpace(){
+    function createSpace(spaceId, callback){
         log.info(" Space being created " +spaceId);
         var spaceObj = {
             "spaceId" : spaceId,
@@ -26,19 +26,18 @@ module.exports =  function(spaceId, callback){
         SpaceDB.create(spaceObj, function(err, doc){
             if(err) log.info(err);
             log.info("New space created in DB");
+            callback(doc);
         });
 
     }
     function findSpace(spaceIdString, callback){
         log.info('crud.findspace space find called by:'+spaceIdString);
-        var foundspace = SpaceDB.find({spaceId: spaceIdString});
-
+        var foundspace = _.find(spaceDataObj, {spaceId: spaceIdString});
         if(!foundspace) return callback(new Error("space undefined"));
-
         log.info('crud.findspace Found space Id: '+foundspace.spaceId);
         return callback(null,foundspace);
-
     }
+
     function deleteSpace(spaceIdString, callback){
         SpaceDB.deleteOne({spaceId: spaceIdString}, function(err){
             if(err) return callback(new Error("space already deleted"));
@@ -54,10 +53,11 @@ module.exports =  function(spaceId, callback){
         var cartObj = {
             "cartName":cart.cartName,
             "xmppJID":cart.xmppJID,
-            "xmppPwd":cart.xmppPwd || process.env.XMPPCARTPWD,
+            "xmppPwd": process.env.XMPPCARTPWD,
             "xmppServer":process.env.XMPPSERVER,
             "cartIP":cart.cartIP,
-            "endpointPwd": cart.endpointPwd || process.env.TPADMINPWD,
+            "mac": cart.mac||'Unknown',
+            "endpointPwd": process.env.TPADMINPWD,
             "peopleTest":"false"||cart.peopleTest,
             "location": cart.location||'Unknown',
             "version": cart.version || "Unknown"
@@ -67,10 +67,25 @@ module.exports =  function(spaceId, callback){
         var newCart = new Cart(cartObj);
         cartDataObj.push(newCart);
         EndpointDB.create(cartObj, function(err, doc) {
-
+            if(err) return callback(new Error("DB failed to update."));
+            log.info(doc);
+            return callback(null, newCart);
         })
 
     }
+    function updateCartArray(cart, callback){
+        var newCart = new Cart(cart);
+        cartDataObj.push(newCart);
+        callback(null,"New Cart added to Array: "+cartDataObj.length);
+    }
+    function deleteOneCartArray(cartIdString, callback){
+        log.info("deleteone: "+ cartIdString);
+        var cartIndex = _.findIndex(cartDataObj, {mac: cartIdString});
+        log.info(cartIndex);
+        if(cartIndex==="undefined") return callback(new Error("Cart already deleted"));
+        cartDataObj.splice(cartIndex, 1);
+        return callback(null, "Cart deleted : "+cartIndex);
+    };
     function findCart(cartIdString, callback){
         log.info('crud.findCart Cart find called by:'+cartIdString);
         var foundcart = _.find(cartDataObj, {xmppJID: cartIdString});
@@ -83,7 +98,7 @@ module.exports =  function(spaceId, callback){
     function deleteCart(cartIdString, callback){
         var cartIndex = _.findIndex(cartDataObj, {xmppJID: cartIdString});
 
-        if(!cartIndex) return callback(new Error("Cart already deleted"));
+        if(!cartIndex) return callback(new Error("Endpoint not found deleted in Array"));
         cartDataObj.splice(cartIndex, 1);
         EndpointDB.deleteOne({xmppJID: cartIdString}, function(err){
             if(err) log.info("Failed to delete endpoint from Database");
@@ -150,11 +165,11 @@ module.exports =  function(spaceId, callback){
     }
 
     function startUp(){
-        log.info("Loading carts ...")
+        log.info("Loading carts ...");
         loadCarts(function(){
-            log.info("crud.startUp: New Carts loaded : "+cartDataObj.length);
+            log.info("appController.startUp: New Carts loaded : "+cartDataObj.length);
             loadSpaces(function(){
-                log.info("crud.startUp: New Active spaces loaded : "+spaceDataObj.length);
+                log.info("appController.startUp: New Active spaces loaded : "+spaceDataObj.length);
             });
         });
 
@@ -166,6 +181,8 @@ module.exports =  function(spaceId, callback){
         findSpace: findSpace,
         deleteSpace: deleteSpace,
         createCart: createCart,
+        updateCartArray: updateCartArray,
+        deleteOneCartArray: deleteOneCartArray,
         findCart: findCart,
         deleteCart: deleteCart,
         findOnlineEndpoint: findOnlineEndpoint,

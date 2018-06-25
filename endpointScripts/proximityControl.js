@@ -17,7 +17,7 @@ function switchProximityMode(mode) {
             console.info(`turned proximity mode: ${mode}`)
         })
         .catch((err) => {
-            console.error(`could not turn proximity mode: ${mode}`)
+            console.error(`could not turn proximity mode: ${mode} ${err}`)
         })
 }
 
@@ -84,7 +84,4 @@ function textBoxUpdate(stringValue){
     });
 }
 // Initialize at widget deployment
-xapi.event.on('UserInterface Extensions Widget LayoutUpdated', (event) => {
-    console.debug("layout updated, let's refresh our toogle")
-    refreshUserInterface()
-});
+refreshProximityToggle();

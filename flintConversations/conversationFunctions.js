@@ -1,6 +1,6 @@
 //Functions used by conversation commands in conversations.js file
 
-var crudDb = require('../model/crud');
+var crudDb = require('../model/appController');
 var helpFile = require('../myutils/help.js');
 var printLog = require('../myutils/changelog.js');
 var _ = require('lodash');

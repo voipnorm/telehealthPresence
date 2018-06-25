@@ -3,7 +3,7 @@ var secret = process.env.SECRETTOKEN;
 var log = require('../svrConfig/logger');
 
 function verifyToken(req, res, next) {
-    log.info("Header Token"+req.headers['x-access-token']);
+    log.info("Header Token "+req.headers['x-access-token']);
     var token = req.headers['x-access-token'];
     if (!token)
         return res.status(403).send({ auth: false, message: 'No token provided.' });

@@ -4,7 +4,7 @@ var Excel = require('exceljs');
 var fs = require('fs');
 var workbook = new Excel.Workbook();
 var log = require('../svrConfig/logger');
-var crud = require('../model/crud');
+var crud = require('../model/appController');
 
 function readcsv(filename, callback){
     workbook.csv.readFile(filename)
@@ -14,10 +14,11 @@ function readcsv(filename, callback){
                 var row = worksheet.getRow(i+1).values;
                 var cart = {
                     cartName: row[1],
-                    ipAddress:row[2],
-                    JID:row[3],
-                    peopleTest:row[4],
-                    location: row[5]||'unknown'
+                    cartIP:row[2],
+                    xmppJID:row[3],
+                    mac: row[4],
+                    peopleTest:row[5],
+                    location: row[6]||'unknown'
                 };
                 crud.createCart(cart, function(){
                     log.info("excel.readcsv: cart writen to file complete.")

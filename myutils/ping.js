@@ -68,6 +68,9 @@ Ping.prototype.ping = function(urlString){
     var req;
     var options = url.parse(urlString);
     options.method = self.method;
+    options.rejectUnauthorized = false;
+    options.requestCert = true;
+    options.agent = false;
 
     if(urlString.indexOf('https:') === 0) {
         req = https.request(options, function (res) {
@@ -103,7 +106,7 @@ Ping.prototype.ping = function(urlString){
     }
 
     req.on('error', function(err) {
-        log.error("spaceObj.pintInterval: "+err);
+        log.error("pingObj.pintInterval: "+err);
         var data = self.responseData(404, statusCodes[404 +'']);
         self.emit('error', data);
         self.pingReport("down", data, urlString);

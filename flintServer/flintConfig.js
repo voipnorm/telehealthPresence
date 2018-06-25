@@ -5,7 +5,7 @@ var accessToken = process.env.SPARK_BOT;
 var webHookUrl =  "http://localhost:8080/flint";
 var Flint = require('node-flint');
 var log = require('../svrConfig/logger');
-var crud = require('../model/crud');
+var crud = require('../model/appController');
 var conversation = require('../flintConversations/conversations');
 
 

@@ -5,6 +5,10 @@ require('dotenv').config();
 var request = require('request');
 var sparkToken = process.env.SPARK_BOT;
 var log = require('../svrConfig/logger');
+const ris = require('cucm-risdevice-query').RisQuery;
+const cucmIp = process.env.CUCMIPADDRESS;
+const cucmAdmin = process.env.CUCMPRESENCEACCOUNT;
+const cucmPwd = process.env.CUCMPRESENCEPWD;
 
 //Spark message posts
 exports.sparkPost = function(text, to) {
@@ -26,3 +30,30 @@ exports.sparkPost = function(text, to) {
         }
     });
 };
+
+exports.checkIp = function(mac, callback){
+    const devices = [mac];
+    const risReqXml = ris.createRisDoc({
+        version: process.env.CUCMVERSION,
+        query: devices
+    });
+    const url = `https://${cucmIp}:8443` + ris.risPath;
+    request({
+        url: url,
+        method: 'POST',
+        body: risReqXml,
+        headers: {
+            'Content-Type': 'text/xml'
+        },
+        auth: {
+            username: cucmAdmin,
+            password: cucmPwd
+        },
+        strictSSL: false
+    }, (err, resp, body) => {
+        if(err) return log.error("CUCM Error :"+err);
+        const parsedResponse = ris.parseResponse(body);
+        log.info(body);
+        return callback(parsedResponse);
+    });
+}
