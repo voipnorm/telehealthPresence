@@ -33,7 +33,7 @@ app.use('/api/auth', AuthController);
 app.use('/api/endpoints', endpointController);
 app.use('/api/users',userController);
 app.use('/api/status', statusController);
-
+//Serve up admin interface
 app.use('/', express.static(__dirname + '/public/home', { index: 'index.html' }));
 
 

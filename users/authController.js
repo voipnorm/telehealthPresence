@@ -1,3 +1,6 @@
+/*
+Generate web token, register users and enable login to admin web interface
+ */
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 var User = require('./user');
@@ -15,6 +18,9 @@ router.use(cors({
     exposedHeaders: 'content-range',
 
 }));
+
+//register users. Admin account token is only allowed to register users using this method.
+
 router.post('/register', function(req, res) {
     var token = req.headers['x-access-token'];
     if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
@@ -36,6 +42,7 @@ router.post('/register', function(req, res) {
     }
 
 });
+//Returns user details based on token
 router.get('/me', function(req, res) {
     var token = req.headers['x-access-token'];
     log.info("Header sent"+req.headers['x-access-token']);
@@ -47,6 +54,7 @@ router.get('/me', function(req, res) {
         res.status(200).send(decoded);
     });
 });
+//User login
 router.post('/login', function(req, res) {
     log.info("Login request from "+req.body.email);
     User.findOne({ email: req.body.email }, function (err, user) {

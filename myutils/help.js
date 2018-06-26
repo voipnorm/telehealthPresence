@@ -18,9 +18,9 @@ var setupGroup = "<br>stuff ";
 
 var inRoomFeedbackGroup = " <br>To provide feedback in the space your using use **@chatbot feedback ***your feedback* command.";
 
-var commands =  "**/command**             - A list of currently available commands.<br>"+
-        "**/adminCommand**        - A list of currently available administration commands.<br>"+
-        "**/presenceCommand**     - A list of currently available telepresence endpoint commands.<br>"+
+var commands =  "**/commands**             - A list of currently available commands.<br>"+
+        "**/adminCommands**        - A list of currently available administration commands.<br>"+
+        "**/presenceCommands**     - A list of currently available telepresence endpoint commands.<br>"+
         "**/expressway** *domain* - Does a lookup for all SRV records for Cisco UC Expressway.<br>"+
         "**/expscan** *domain*    - Does a lookup for Cisco UC Expressway SRV records and scans for open ports using TCP sockets.<br>"+
         "**/feedback** *text*     - Send feedback or issues to Telehealth Presence creators.<br>"+
@@ -37,13 +37,13 @@ var commands =  "**/command**             - A list of currently available comman
         "**/url** *url*           - Parse a URL using Node.js url module, shows result of the URL object produced.<br>"+
         "**/xmpp** *domain*       - Does a SRV record look up for XMPP record.";
 
-var adminCommands =  "**/adminCommand** - A list of currently available adminstrative commands.<br>"+
+var adminCommands =  "**/adminCommands** - A list of currently available adminstrative commands.<br>"+
         "**/spaceID** - See the space ID of this space.<br>"+
         "**/spaceCount** - See how many spaces this application/bot has been added to.<br>"+
         "**/who** - See who all else is in the room with you.";
 
-var presenceCommands = "**/presenceCommand** - A list of currently available commands for telehealth presence functions.<br>"+
-        "**/bulkUploads** - Use a CSV file to mass upload endpoints<br>"+
+var presenceCommands = "**/presenceCommands** - A list of currently available commands for telehealth presence functions.<br>"+
+        "**/bulkUploads** - Use a CSV file to mass upload endpoints. Format for CSV : cart name, IP address, XMPP JID, MAC, Peopletest(true or false), Location<br>"+
         "**/broadcast** 'yourmessage' - Send a broadcast message to all online endpoints of this application.<br>"+
         "**/csvFormat** - CSV file format to mass upload endpoints used by the bulkUploads command<br>"+
         "**/offlineReport** - See what endpoints are currently offline<br>"+

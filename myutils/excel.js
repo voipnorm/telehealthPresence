@@ -16,7 +16,7 @@ function readcsv(filename, callback){
                     cartName: row[1],
                     cartIP:row[2],
                     xmppJID:row[3],
-                    mac: row[4],
+                    mac: 'SEP'+row[4],
                     peopleTest:row[5],
                     location: row[6]||'unknown'
                 };

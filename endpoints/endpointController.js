@@ -13,7 +13,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 router.use(range({
         accept: 'endpoints',
-        limit: 10,
+        limit: 1000,
     }));
 router.use(cors({
         origin: '*',

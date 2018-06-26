@@ -69,7 +69,7 @@ module.exports = {
         log.info(trigger.files[0].type);
         fs.writeFile('./myutils/csvUploads/endpoints.csv',trigger.files[0].binary,'base64',function(err){
             if(err) log.error(err);
-            log.info("file upload complete... laucnching file watcher to upload endpoints");
+            log.info("file upload complete... launching file watcher to upload endpoints");
             excel.fileWatcher(function(){
                 log.info("conversationFunction.buildUpload: Filewatcher complete, new endpoints are added.")
                 bot.say("Your endpoints have been loaded and should be coming online shortly.")

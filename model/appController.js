@@ -1,4 +1,4 @@
-//load JSON and other file as well as intial opbject cart and space creation
+//load JSON and other file as well as intialize cart and space creation
 
 require('dotenv').config();
 var Space = require('./space');

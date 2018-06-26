@@ -1,3 +1,5 @@
+//verify tokens being processed by API
+
 var jwt = require('jsonwebtoken');
 var secret = process.env.SECRETTOKEN;
 var log = require('../svrConfig/logger');
