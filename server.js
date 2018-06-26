@@ -40,7 +40,7 @@ app.use('/', express.static(__dirname + '/public/home', { index: 'index.html' })
 var sslOptions = {
     key: fs.readFileSync('./certs/key.pem'),
     cert: fs.readFileSync('./certs/cert.pem'),
-    passphrase: 'secretworthkeeping'
+    passphrase: process.env.SECRETTOKEN
 };
 crud.startUp();
 
