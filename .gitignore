@@ -8,7 +8,7 @@ device.json
 #access log
 access.log
 
-
+certs
 # Logs
 logs
 *.log
