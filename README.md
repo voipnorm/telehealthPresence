@@ -37,6 +37,8 @@ Configuration required:
 * Cisco Webex Teams Space ID to send application messages.
 * DNS FQDN videoPresence.<your domain>:3001 eith via DNS record or host record.
 * install and configure Nodejs and MongoDb
+* Optional: MongoDb Compass 
+https://www.mongodb.com/download-center#compass
 
 ### Installing
 
@@ -81,6 +83,23 @@ Despcription of variables:
 * APP_ADMIN => admins Webex Teams ID
 * XMPPSERVER => XMPP/CUPS server ip address
 * XMPPCARTPWD => admin password for telehealth cart. Can also be specified in cart.json
+
+##Generate Local CA Certificates using OpenSSL:
+
+```
+openssl genrsa -out localhost.key 2048
+openssl req -new -x509 -key localhost.key -out localhost.cert -days 3650 -subj /CN=localhost
+```
+#Node alternate configuration for https:
+```
+var options = {
+    key: fs.readFileSync( './localhost.key' ),
+    cert: fs.readFileSync( './localhost.cert' ),
+    requestCert: false,
+    rejectUnauthorized: false
+};
+
+```
 
 ## Built With
 
