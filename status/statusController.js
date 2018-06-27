@@ -34,7 +34,8 @@ router.get("/",VerifyToken, function(req, res) {
                 cartName: carts[i].cartName,
                 cartIP: carts[i].cartIP,
                 status: carts[i].cartStatus,
-                location: carts[i].location
+                location: carts[i].location,
+                version: carts[i].version
             });
         }
         res.range({

@@ -8,7 +8,7 @@ var myutils = require('../myutils/myutils');
 var log = require('../svrConfig/logger');
 var Ping = require('../myutils/ping');
 var xmpp = require('simple-xmpp');
-var Endpoint = require('../endpoints/endpoints')
+var Endpoint = require('../endpoints/endpoints');
 
 
 
@@ -145,6 +145,12 @@ Cart.prototype.peoplePresence =  function(){
     return videoCodec.getEndpointData()
         .then((endpoint) =>{
             log.info(cart.ipAddress+':'+JSON.stringify(endpoint));
+            if(self.version != endpoint.version) {
+                Endpoint.findOneAndUpdate({mac:self.mac}, {version:endpoint.version },{ new: true }, function(err,doc){
+                    if(err) log.error(err);
+                    log.info(doc);
+                });
+            };
             if(endpoint.dndActive === "Active"){
                 self.cartStatus = "dnd";
                 return self.xmppUser.setPresence('dnd', self.cartName + ' is occupied. Do Not Disturb');

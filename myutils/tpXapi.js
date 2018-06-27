@@ -13,6 +13,7 @@ function TPXapi(endpoint){
     this.peoplePresenceActive;
     this.callStatusActive;
     this.dndActive;
+    this.version;
 
 }
 
@@ -30,6 +31,7 @@ TPXapi.prototype.getEndpointData =  function(){
                     peoplePresenceActive: self.peoplePresenceActive,
                     callStatusActive: self.callStatusActive,
                     dndActive: self.dndActive,
+                    version: self.version,
                 };
 
                 return resolve(endpoint);
@@ -59,6 +61,10 @@ TPXapi.prototype.endpointUpdate = function(){
         .then((status) => {
             log.info(status);
             return self.dndStatus()
+        })
+        .then((status) => {
+            log.info(status);
+            return self.checkVersion()
         })
         .then((status) => {
             log.info(status);
@@ -157,6 +163,35 @@ TPXapi.prototype.peoplePresence =  function(){
                     reject(err)
                 )
             });
+    })
+};
+//check firmware version
+TPXapi.prototype.checkVersion = function(){
+    //SystemUnit Software Version
+    const self = this;
+    return new Promise((resolve, reject) => {
+        return self.xapi.status
+            .get('SystemUnit Software Version')
+            .then((version) => {
+                self.version = version;
+                resolve(version);
+            })
+            .catch(err => reject(err));
+    })
+};
+//Check device type
+TPXapi.prototype.checkType = function(){
+    //SystemUnit type
+    log.info("info: Checking system type.")
+    const self = this;
+    return new Promise((resolve, reject) => {
+        return self.xapi.status
+            .get('SystemUnit ProductPlatform')
+            .then((type) => {
+                self.type = type;
+                resolve(type);
+            })
+            .catch(err => reject(err));
     })
 };
 
