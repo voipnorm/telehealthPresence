@@ -172,6 +172,8 @@ Cart.prototype.peoplePresence =  function(){
                         if (!data[0].ip) {
                             log.error("Endpoint IP Address Unknown in CUCM");
                             myutils.sparkPost(self.cartName + " does not have a MAC address record available in CUCM, please correct this issue", process.env.SPARK_ROOM_ID);
+                            self.xmppUser.setPresence('dnd', self.cartName + ' is currently having issues, please try another cart.');
+                            return self;
                         }
                         else {
                             log.info("Updating cart IP address from CUCM");
