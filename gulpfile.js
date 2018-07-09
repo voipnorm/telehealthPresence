@@ -26,7 +26,7 @@ gulp.task('test', function(){
 });
 
 gulp.task('lint', function () {
-    return gulp.src(['**/*.js','!node_modules/**','!code graveyard/**','!Tests/**'])
+    return gulp.src(['**/*.js','!node_modules/**','!code graveyard/**','!Tests/**','!public/**'])
         .pipe(eslint())
         .pipe(eslint.format());
 });

@@ -33,10 +33,12 @@ exports.sparkPost = function(text, to) {
 
 exports.checkIp = function(mac, callback){
     const devices = [mac];
+    log.info("Mac Requested: "+mac);
     const risReqXml = ris.createRisDoc({
         version: process.env.CUCMVERSION,
         query: devices
     });
+    log.info('Processing Mac: '+risReqXml.query);
     const url = `https://${cucmIp}:8443` + ris.risPath;
     request({
         url: url,
@@ -51,9 +53,9 @@ exports.checkIp = function(mac, callback){
         },
         strictSSL: false
     }, (err, resp, body) => {
-        if(err) return log.error("CUCM Error :"+err);
+        if(err) return log.error("CUCM Error : "+err);
         const parsedResponse = ris.parseResponse(body);
-        log.info(body);
+        log.info(JSON.stringify(parsedResponse));
         return callback(parsedResponse);
     });
 }

@@ -14,7 +14,7 @@
     "bottleneck": "^1.15.1",
     "ciscospark-websocket-events": "^1.2.0",
     "cors": "^2.8.4",
-    "cucm-risdevice-query": "^1.0.5",
+    "cucm-risdevice-query": "^1.0.7",
     "debug": "^2.2.0",
     "dotenv": "^4.0.0",
     "exceljs": "^0.8.1",

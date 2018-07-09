@@ -14,6 +14,7 @@ function TPXapi(endpoint){
     this.callStatusActive;
     this.dndActive;
     this.version;
+    this.mac;
 
 }
 
@@ -32,6 +33,7 @@ TPXapi.prototype.getEndpointData =  function(){
                     callStatusActive: self.callStatusActive,
                     dndActive: self.dndActive,
                     version: self.version,
+                    mac: self.mac,
                 };
 
                 return resolve(endpoint);
@@ -65,6 +67,10 @@ TPXapi.prototype.endpointUpdate = function(){
         .then((status) => {
             log.info(status);
             return self.checkVersion()
+        })
+        .then((status) => {
+            log.info(status);
+            return self.checkMac()
         })
         .then((status) => {
             log.info(status);
@@ -191,9 +197,31 @@ TPXapi.prototype.checkType = function(){
                 self.type = type;
                 resolve(type);
             })
-            .catch(err => reject(err));
+            .catch(err => {
+                log.error(err)
+                reject(err)
+            });
     })
 };
+TPXapi.prototype.checkMac = function(){
+    //SystemUnit type
+    log.info("info: Checking system Mac.");
+    const self = this;
+    return new Promise((resolve, reject) => {
+        return self.xapi.status
+            .get('Network 1 Ethernet MacAddress')
+            .then((mac) => {
+                log.info(mac);
+                self.mac = mac;
+                resolve(mac);
+            })
+            .catch(err => {
+                log.error(err);
+                reject(err)
+            });
+    })
+};
+
 
 //close ssh connection
 TPXapi.prototype.closeConnect =  function(){

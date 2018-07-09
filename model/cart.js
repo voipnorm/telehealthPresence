@@ -9,7 +9,7 @@ var log = require('../svrConfig/logger');
 var Ping = require('../myutils/ping');
 var xmpp = require('simple-xmpp');
 var Endpoint = require('../endpoints/endpoints');
-
+var CUCMPoll = require('../myutils/pollCUCM');
 
 
 //pass in object versus single values
@@ -28,6 +28,7 @@ function Cart(data){
     this.interval = 1;
     this.reportTiming =  60;
     this.pingObj = {};
+    this.cucmPolling = {};
     this.init();
     this.xmppUser;
     this.location = data.location;
@@ -40,10 +41,9 @@ util.inherits(Cart,EventEmitter);
 
 Cart.prototype.init = function(){
     var self = this;
-
     self.pingInit();
     self.xmppInit();
-
+    self.checkCUCM();
 };
 
 Cart.prototype.pingInit =  function(){
@@ -53,7 +53,6 @@ Cart.prototype.pingInit =  function(){
     log.info("cart.pingCheck : is loading....");
     var delay =  (self.interval * (30 * 1000));
     self.pingObj = new Ping({url: url, delay: delay, reps: reps, upTime:self.reportTiming});
-    //self.pingObj.startPing();
     return self;
 };
 
@@ -84,6 +83,13 @@ Cart.prototype.xmppConnect =  function() {
     return self;
 };
 
+Cart.prototype.checkCUCM =  function(){
+    var self= this;
+    self.cucmPolling = new CUCMPoll(self.mac);
+    return self;
+
+};
+
 Cart.prototype.presenceStatusMonitor =  function(){
     log.info("cartObj.presenceStatusMonitor: loaded.");
     var self = this;
@@ -105,7 +111,13 @@ Cart.prototype.presenceStatusMonitor =  function(){
     self.pingObj.on('error', function(){
         self.cartStatus = "offline";
         log.info("Updating this Mac: "+self.mac);
-        myutils.checkIp(self.mac, function(data){
+        self.cucmPolling.checkIP(function(data){
+            if(!data){
+                log.error("Endpoint IP Address Unknown in CUCM");
+                myutils.sparkPost(self.cartName+" does not have a MAC address record available in CUCM, please correct this issue", process.env.SPARK_ROOM_ID);
+                self.xmppUser.setPresence('dnd', self.cartName+' is currently having issues, please try another cart.');
+                return self;
+            }
             if(data[0].ip != self.cartIP){
                 if(!data[0].ip){
                     log.error("Endpoint IP Address Unknown in CUCM");
@@ -114,13 +126,15 @@ Cart.prototype.presenceStatusMonitor =  function(){
                 else{
                     log.info("Updating cart IP address from CUCM");
                     self.pingObj.stopPing();
-                    self.pingObj={};
+                    self.pingObj ={};
+                    self.xmppUser.disconnect();
+                    self.xmppUser = {};
+                    self.cucmPolling = {};
                     self.cartIP = data[0].ip;
                     Endpoint.findOneAndUpdate({xmppJID: self.xmppJID},{cartIP: self.cartIP}, function(err, endpoint){
                         if(err) log.error('DB Update failed: '+err);
                         log.info(self.cartIP);
-                        self.pingInit();
-                        self.xmppUser.setPresence('away', self.cartName+' is coming online, please stand by');
+                        self.init();
                         log.info("Update IP address success: "+endpoint.cartName);
                         return self;
                     });
@@ -145,6 +159,39 @@ Cart.prototype.peoplePresence =  function(){
     return videoCodec.getEndpointData()
         .then((endpoint) =>{
             log.info(cart.ipAddress+':'+JSON.stringify(endpoint));
+            const macCheck = 'SEP'+endpoint.mac.replace(/:/g,'');
+            if(macCheck!=self.mac){
+                self.cucmPolling.checkIP(function(data) {
+                    if (!data) {
+                        log.error("Endpoint IP Address Unknown in CUCM");
+                        myutils.sparkPost(self.cartName + " does not have a MAC address record available in CUCM, please correct this issue", process.env.SPARK_ROOM_ID);
+                        self.xmppUser.setPresence('dnd', self.cartName + ' is currently having issues, please try another cart.');
+                        return self;
+                    }
+                    if (data[0].ip != self.cartIP) {
+                        if (!data[0].ip) {
+                            log.error("Endpoint IP Address Unknown in CUCM");
+                            myutils.sparkPost(self.cartName + " does not have a MAC address record available in CUCM, please correct this issue", process.env.SPARK_ROOM_ID);
+                        }
+                        else {
+                            log.info("Updating cart IP address from CUCM");
+                            self.pingObj.stopPing();
+                            self.pingObj = {};
+                            self.xmppUser.disconnect();
+                            self.xmppUser = {};
+                            self.cucmPolling = {};
+                            self.cartIP = data[0].ip;
+                            Endpoint.findOneAndUpdate({xmppJID: self.xmppJID}, {cartIP: self.cartIP}, function (err, endpoint) {
+                                if (err) log.error('DB Update failed: ' + err);
+                                log.info(self.cartIP);
+                                self.init();
+                                log.info("Update IP address success: " + endpoint.cartName);
+                                return self;
+                            });
+                        }
+                    }
+                })
+            }
             if(self.version != endpoint.version) {
                 Endpoint.findOneAndUpdate({mac:self.mac}, {version:endpoint.version },{ new: true }, function(err,doc){
                     if(err) log.error(err);
