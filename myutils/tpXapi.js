@@ -237,6 +237,7 @@ TPXapi.prototype.closeConnect =  function(){
 };
 
 TPXapi.prototype.onError =  function(){
+    const self = this;
     self.on('error', function(err) {
         log.error(err);
     });
