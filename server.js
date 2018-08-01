@@ -12,6 +12,7 @@ var AuthController = require('./users/authController');
 var endpointController = require('./endpoints/endpointController');
 var userController = require('./users/userController');
 var statusController = require('./status/statusController');
+var broadcastController = require('./broadcast/broadcastController');
 var fs = require('fs');
 
 var app = express();
@@ -33,6 +34,7 @@ app.use('/api/auth', AuthController);
 app.use('/api/endpoints', endpointController);
 app.use('/api/users',userController);
 app.use('/api/status', statusController);
+app.use('/api/broadcast', broadcastController);
 //Serve up admin interface
 app.use('/', express.static(__dirname + '/public/home', { index: 'index.html' }));
 

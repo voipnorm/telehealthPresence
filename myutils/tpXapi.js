@@ -235,11 +235,11 @@ TPXapi.prototype.closeConnect =  function(){
 
     })
 };
-
 TPXapi.prototype.onError =  function(){
     const self = this;
-    self.on('error', function(err) {
-        log.error(err);
+    self.xapi.on('error', (err) => {
+        console.error(`connexion failed: ${err}, exiting`);
     });
+
 };
 module.exports = TPXapi;
