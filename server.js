@@ -23,7 +23,6 @@ app.use(bodyParser.json());
 app.post('/flint',webhook(flint));
 //CORS Configuration
 app.use(function(req, res, next) {
-    log.info(req);
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();

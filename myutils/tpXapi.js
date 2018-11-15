@@ -79,6 +79,7 @@ TPXapi.prototype.endpointUpdate = function(){
         .catch((err) => {
             log.error(err);
         })
+
 }
 
 //connect to ssh service on endpoints
